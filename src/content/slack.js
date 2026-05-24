@@ -17,14 +17,36 @@
   const DEBOUNCE_MS = 150;
   const SEVERITY_WEIGHT = { low: 1, medium: 2, high: 3 };
 
+  // Error-logging helper — writes to chrome.storage.local.scopecreepErrors
+  // (ring buffer cap 20). Panel reads + displays in settings. Same shape as
+  // panel.js logError (duplicated because content scripts can't import shared
+  // modules in MV3 without bundling).
+  function logError(ctx, msg) {
+    try {
+      chrome.storage.local.get("scopecreepErrors", (data) => {
+        const errs = (data && data.scopecreepErrors) || [];
+        errs.unshift({
+          ts: new Date().toISOString(),
+          ctx: String(ctx).slice(0, 60),
+          msg: String(msg).slice(0, 200),
+        });
+        chrome.storage.local.set({ scopecreepErrors: errs.slice(0, 20) });
+      });
+    } catch (_) {
+      console.error("[ScopeCreep slack]", ctx, msg);
+    }
+  }
+
   // ── 1. Load lexicon + user prefs ───────────────────────────────────────────
   let lexicon;
   try {
     const url = chrome.runtime.getURL("src/data/lexicon.json");
     const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     lexicon = await res.json();
   } catch (err) {
     console.error("[ScopeCreep] failed to load lexicon:", err);
+    logError("lexicon-fetch", err && err.message ? err.message : String(err));
     return;
   }
   const categoryWeight = new Map(

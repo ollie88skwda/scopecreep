@@ -21,6 +21,27 @@
   const STORAGE_TEMPLATE = "scopecreepTemplateId";
   const STORAGE_ONBOARDED = "scopecreepOnboarded";
   const STORAGE_STATS = "scopecreepStats";
+  const STORAGE_ERRORS = "scopecreepErrors";
+  const ERROR_BANNER_WINDOW_MS = 5 * 60 * 1000; // 5 min
+  const ERROR_RING_SIZE = 20;
+
+  function logError(ctx, msg) {
+    try {
+      chrome.storage.local.get(STORAGE_ERRORS, (data) => {
+        const errs = data[STORAGE_ERRORS] || [];
+        errs.unshift({
+          ts: new Date().toISOString(),
+          ctx: String(ctx).slice(0, 60),
+          msg: String(msg).slice(0, 200),
+        });
+        chrome.storage.local.set({
+          [STORAGE_ERRORS]: errs.slice(0, ERROR_RING_SIZE),
+        }, renderErrors);
+      });
+    } catch (_) {
+      console.error("[ScopeCreep panel]", ctx, msg);
+    }
+  }
 
   function initStats() {
     return {
@@ -70,6 +91,11 @@
     statCopied: document.getElementById("stat-copied"),
     statsSince: document.getElementById("stats-since"),
     statsReset: document.getElementById("stats-reset"),
+
+    errorBanner: document.getElementById("error-banner"),
+    errorBannerText: document.getElementById("error-banner-text"),
+    errorsList: document.getElementById("errors-list"),
+    errorsClear: document.getElementById("errors-clear"),
   };
 
   let templates = null;
@@ -92,6 +118,7 @@
       templates = await res.json();
     } catch (err) {
       console.error("[ScopeCreep] failed to load templates:", err);
+      logError("templates-fetch", err && err.message ? err.message : String(err));
       templates = {
         default_template_id: "fallback",
         templates: [
@@ -261,6 +288,48 @@
     });
   }
 
+  // ── Error rendering ────────────────────────────────────────────────────────
+  function renderErrors() {
+    chrome.storage.local.get(STORAGE_ERRORS, (data) => {
+      const errs = data[STORAGE_ERRORS] || [];
+
+      // Banner: show if any error within last ERROR_BANNER_WINDOW_MS
+      const now = Date.now();
+      const recent = errs.find((e) => {
+        const ts = Date.parse(e.ts);
+        return ts && now - ts < ERROR_BANNER_WINDOW_MS;
+      });
+      if (recent && els.errorBanner) {
+        els.errorBanner.style.display = "flex";
+        els.errorBannerText.textContent =
+          `Error: ${recent.ctx} — see Settings`;
+      } else if (els.errorBanner) {
+        els.errorBanner.style.display = "none";
+      }
+
+      // Full list in settings
+      if (!els.errorsList) return;
+      if (errs.length === 0) {
+        els.errorsList.className = "errors-list empty";
+        els.errorsList.textContent = "No errors logged.";
+        return;
+      }
+      els.errorsList.className = "errors-list";
+      els.errorsList.innerHTML = "";
+      for (const e of errs.slice(0, 5)) {
+        const row = document.createElement("div");
+        row.className = "err";
+        const ts = new Date(e.ts);
+        const tstr = ts.toLocaleTimeString();
+        row.innerHTML =
+          `<span class="ts">${esc(tstr)}</span>` +
+          `<span class="ctx">${esc(e.ctx)}</span>` +
+          `<span class="msg">${esc(e.msg)}</span>`;
+        els.errorsList.appendChild(row);
+      }
+    });
+  }
+
   // ── Stats rendering ────────────────────────────────────────────────────────
   function renderStats() {
     chrome.storage.local.get(STORAGE_STATS, (data) => {
@@ -321,6 +390,17 @@
     }
   });
 
+  // ── Errors banner click → open settings to the errors section ──────────────
+  els.errorBanner.addEventListener("click", () => {
+    openSettings({ firstRun: false });
+    setTimeout(() => els.errorsList && els.errorsList.scrollIntoView({ behavior: "smooth", block: "center" }), 100);
+  });
+
+  // ── Errors clear ───────────────────────────────────────────────────────────
+  els.errorsClear.addEventListener("click", () => {
+    chrome.storage.local.set({ [STORAGE_ERRORS]: [] }, renderErrors);
+  });
+
   // ── Settings actions ───────────────────────────────────────────────────────
   els.settingsLink.addEventListener("click", (ev) => {
     ev.preventDefault();
@@ -376,6 +456,7 @@
         }
 
         renderStats();
+        renderErrors();
       }
     );
   })();

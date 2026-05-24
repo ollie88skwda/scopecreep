@@ -320,6 +320,55 @@
     font-style: italic;
   }
 
+  /* Error banner */
+  .error-banner {
+    background: rgba(201, 90, 74, 0.14);
+    border-bottom: 1px solid rgba(201, 90, 74, 0.4);
+    padding: 8px 20px;
+    color: var(--warn);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+  }
+  .error-banner:hover { background: rgba(201, 90, 74, 0.2); }
+  .error-banner .arrow {
+    color: var(--warn);
+    margin-left: 8px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  /* Recent errors list in settings */
+  .errors-list {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 6px 0;
+    margin-bottom: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  .errors-list .err {
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--line);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  .errors-list .err:last-child { border-bottom: 0; }
+  .errors-list .err .ts { color: var(--dim); }
+  .errors-list .err .ctx { color: var(--warn); margin: 0 6px; }
+  .errors-list .err .msg { color: var(--ink); }
+  .errors-list.empty {
+    color: var(--dim);
+    font-size: 12px;
+    padding: 14px;
+    text-align: center;
+    font-style: italic;
+  }
+
   /* Stats */
   .stats-grid {
     display: grid;
@@ -364,6 +413,11 @@
   <div class="ver" id="ver">v0.4.0</div>
 </header>
 
+<div class="error-banner" id="error-banner" style="display:none;">
+  <span id="error-banner-text">An error occurred recently — see Settings</span>
+  <span class="arrow">→</span>
+</div>
+
 <main id="main">
   <div class="empty" id="empty">
     <div class="icon">— · —</div>
@@ -406,6 +460,10 @@
       <input id="set-slack-name" type="text" placeholder="e.g. Ollie Nguyen" autocomplete="off">
       <div class="hint">Exact text as it appears in Slack message headers. Used to skip your own messages so the extension only flags incoming client asks.</div>
     </div>
+
+    <div class="label" style="margin-top: 24px;">Recent errors</div>
+    <div class="errors-list" id="errors-list"></div>
+    <button class="ghost" id="errors-clear" style="font-size: 11px; padding: 6px 10px; margin-bottom: 8px;">Clear errors</button>
 
     <div class="label" style="margin-top: 24px;">Your stats</div>
     <div class="stats-grid" id="stats-grid">
