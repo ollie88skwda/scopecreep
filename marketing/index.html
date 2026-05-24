@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="ScopeCreep Notary — a Chrome extension that catches scope-expanding client messages in Slack before they cost you money.">
+<meta property="og:title" content="ScopeCreep Notary — stop losing money to scope creep">
+<meta property="og:description" content="Watches Slack for client messages that quietly expand your project scope. One click drafts a professional change-order email.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0a0a0a">
+<title>ScopeCreep Notary — stop losing $8-15k/yr to scope creep</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --panel: #111111;
+    --panel-2: #161616;
+    --line: #1f1f1f;
+    --line-strong: #2a2a2a;
+    --ink: #e6e6e6;
+    --muted: #9ca3af;
+    --dim: #6b7280;
+    --accent: #d4a64a;
+    --warn: #c95a4a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--ink); }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 0 32px; }
+
+  /* Nav */
+  nav {
+    padding: 22px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  nav .brand {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  nav .brand .slash { color: var(--muted); margin: 0 6px; }
+
+  /* Hero */
+  .hero { padding: 96px 0 80px; }
+  .hero .pre {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-size: 48px;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    font-weight: 600;
+    margin-bottom: 22px;
+    max-width: 720px;
+  }
+  .hero h1 .em {
+    color: var(--accent);
+  }
+  .hero p.sub {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 600px;
+    margin-bottom: 36px;
+    line-height: 1.55;
+  }
+  .hero .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--accent);
+    color: #0a0a0a;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 14px 22px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.15s, transform 0.15s;
+  }
+  .hero .cta:hover {
+    background: #e6b85a;
+    transform: translateY(-1px);
+  }
+  .hero .cta.disabled {
+    background: var(--panel);
+    color: var(--muted);
+    border: 1px solid var(--line);
+    cursor: not-allowed;
+  }
+  .hero .cta.disabled:hover {
+    transform: none;
+    background: var(--panel);
+  }
+  .hero .cta-note {
+    margin-left: 16px;
+    font-size: 13px;
+    color: var(--dim);
+  }
+
+  /* Problem */
+  .problem {
+    padding: 60px 0;
+    border-top: 1px solid var(--line);
+  }
+  .problem .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+  .problem .stat {
+    padding: 24px 0;
+  }
+  .problem .stat .num {
+    font-size: 40px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 8px;
+  }
+  .problem .stat .lbl {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* How */
+  .how {
+    padding: 80px 0;
+    border-top: 1px solid var(--line);
+  }
+  .label {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+  .how h2 {
+    font-size: 32px;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 40px;
+    max-width: 580px;
+  }
+  .how ol {
+    list-style: none;
+    counter-reset: step;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+  .how li {
+    counter-increment: step;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 24px;
+    position: relative;
+  }
+  .how li::before {
+    content: counter(step, decimal-leading-zero);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    margin-bottom: 14px;
+    display: block;
+  }
+  .how li h3 {
+    font-size: 16px;
+    color: var(--ink);
+    margin-bottom: 8px;
+    letter-spacing: -0.005em;
+  }
+  .how li p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  /* Screenshot */
+  .screenshot {
+    padding: 80px 0;
+    border-top: 1px solid var(--line);
+  }
+  .screenshot .mock {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    color: var(--dim);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .screenshot .mock .placeholder-icon {
+    font-size: 22px;
+    color: var(--accent);
+    margin-bottom: 12px;
+    letter-spacing: 0.2em;
+  }
+
+  /* Trust */
+  .trust {
+    padding: 60px 0 80px;
+    border-top: 1px solid var(--line);
+  }
+  .trust .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+  }
+  .trust .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 22px 24px;
+  }
+  .trust .card h3 {
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: var(--ink);
+  }
+  .trust .card p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  /* CTA bottom */
+  .cta-bottom {
+    padding: 80px 0;
+    border-top: 1px solid var(--line);
+    text-align: center;
+  }
+  .cta-bottom h2 {
+    font-size: 32px;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 22px;
+  }
+  .cta-bottom .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--accent);
+    color: #0a0a0a;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 14px 22px;
+    border-radius: 6px;
+    text-decoration: none;
+  }
+  .cta-bottom .cta.disabled {
+    background: var(--panel);
+    color: var(--muted);
+    border: 1px solid var(--line);
+    cursor: not-allowed;
+  }
+
+  /* Footer */
+  footer {
+    padding: 40px 0 56px;
+    border-top: 1px solid var(--line);
+    color: var(--dim);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--ink); }
+
+  /* Mobile */
+  @media (max-width: 680px) {
+    .wrap { padding: 0 20px; }
+    .hero { padding: 56px 0 48px; }
+    .hero h1 { font-size: 32px; }
+    .hero p.sub { font-size: 16px; }
+    .problem .grid { grid-template-columns: 1fr; gap: 16px; }
+    .problem .stat { padding: 14px 0; border-bottom: 1px solid var(--line); }
+    .how ol { grid-template-columns: 1fr; gap: 14px; }
+    .how h2, .cta-bottom h2 { font-size: 24px; }
+    .trust .grid { grid-template-columns: 1fr; gap: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="/">ScopeCreep <span class="slash">/</span> Notary</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="pre">Chrome extension for freelancers</div>
+    <h1>Stop losing <span class="em">$8-15k a year</span> to scope creep you didn't notice.</h1>
+    <p class="sub">
+      Watches your Slack for client messages that quietly expand your project. One click drafts a professional change-order email so you bill what you're owed.
+    </p>
+    <div>
+      <a href="#cta" class="cta disabled" aria-disabled="true">
+        Get it on Chrome Web Store
+      </a>
+      <span class="cta-note">Listing pending · v0.3.0 beta</span>
+    </div>
+  </div>
+</section>
+
+<section class="problem">
+  <div class="wrap">
+    <div class="grid">
+      <div class="stat">
+        <div class="num">$7.8&ndash;15.6k</div>
+        <div class="lbl">Average per-freelancer revenue lost to scope creep every year. <span style="color: var(--dim);">— Freelancers Union 2026</span></div>
+      </div>
+      <div class="stat">
+        <div class="num">72%</div>
+        <div class="lbl">of freelance projects suffer from scope creep without formal change controls. <span style="color: var(--dim);">— Wellingtone</span></div>
+      </div>
+      <div class="stat">
+        <div class="num">67%</div>
+        <div class="lbl">of freelancers regularly do unpaid work because they didn't push back on small asks. <span style="color: var(--dim);">— Freelancers Union 2026</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="how">
+  <div class="wrap">
+    <div class="label">How it works</div>
+    <h2>Install once. Catch it forever.</h2>
+    <ol>
+      <li>
+        <h3>Paste your SOW</h3>
+        <p>One time, in the extension popup. Stored locally on your device — never sent anywhere.</p>
+      </li>
+      <li>
+        <h3>Browse Slack normally</h3>
+        <p>The extension watches client messages for scope-expansion patterns (190 phrases across 15 categories). Flagged messages get a discrete badge in the corner.</p>
+      </li>
+      <li>
+        <h3>Click → copy → send</h3>
+        <p>Badge click opens a panel with the trigger quoted, your SOW for context, and a drafted change-order email in your tone of choice. Copy and paste back into Slack.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section class="screenshot">
+  <div class="wrap">
+    <div class="label">In action</div>
+    <h2 style="font-size: 28px; letter-spacing: -0.02em; margin-bottom: 32px;">The popup, when something gets flagged.</h2>
+    <div class="mock" id="screenshot-mock">
+      <div class="placeholder-icon">— · —</div>
+      <div>Screenshot coming with v0.3.0 release</div>
+      <div style="margin-top: 6px; color: var(--dim);">Real popup capture once the extension is on Chrome Web Store</div>
+    </div>
+  </div>
+</section>
+
+<section class="trust">
+  <div class="wrap">
+    <div class="label">What it does NOT do</div>
+    <h2 style="font-size: 28px; letter-spacing: -0.02em; margin-bottom: 32px;">Privacy isn't an afterthought.</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>No server roundtrip</h3>
+        <p>Your client messages, your SOW, your stats — all stored in your browser's local storage. Nothing leaves your device.</p>
+      </div>
+      <div class="card">
+        <h3>No AI in the request path</h3>
+        <p>Detection is a deterministic lexicon scan, not an LLM. Zero per-message API cost. Zero data sent to any model.</p>
+      </div>
+      <div class="card">
+        <h3>No tracking, no analytics</h3>
+        <p>No third-party scripts, no telemetry, no cookies. Open source — read the code yourself.</p>
+      </div>
+      <div class="card">
+        <h3>No subscriptions for v1</h3>
+        <p>Free during beta. Pro tier ($12/mo) and Agency tier ($39/mo) ship later — fully optional.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-bottom" id="cta">
+  <div class="wrap">
+    <h2>Bill what you're owed.</h2>
+    <a href="#" class="cta disabled" aria-disabled="true">
+      Get it on Chrome Web Store
+    </a>
+    <div style="margin-top: 16px; color: var(--dim); font-size: 13px;">
+      Listing pending · v0.3.0 beta · <a href="https://github.com/" style="color: var(--accent);">Source on GitHub</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap" style="display: flex; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 12px;">
+    <div>ScopeCreep Notary · v0.3.0 beta · made for freelancers</div>
+    <div>
+      <a href="#cta">Install</a> ·
+      <a href="https://github.com/">GitHub</a> ·
+      <a href="mailto:hello@scopecreep.app">hello@</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
