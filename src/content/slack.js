@@ -17,7 +17,7 @@
   const DEBOUNCE_MS = 150;
   const SEVERITY_WEIGHT = { low: 1, medium: 2, high: 3 };
 
-  // ── 1. Load lexicon ────────────────────────────────────────────────────────
+  // ── 1. Load lexicon + user prefs ───────────────────────────────────────────
   let lexicon;
   try {
     const url = chrome.runtime.getURL("src/data/lexicon.json");
@@ -30,6 +30,31 @@
   const categoryWeight = new Map(
     (lexicon.categories || []).map((c) => [c.id, c.weight ?? 1.0])
   );
+
+  // Load user's Slack display name so we can skip their own messages.
+  // Re-fetched on each chrome.storage change so panel updates take effect live.
+  let ownSlackName = "";
+  function loadSlackName() {
+    try {
+      chrome.storage.local.get("scopecreepSlackName", (data) => {
+        ownSlackName = ((data && data.scopecreepSlackName) || "").trim();
+      });
+    } catch (_) {
+      /* extension context invalidated */
+    }
+  }
+  loadSlackName();
+  try {
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area !== "local") return;
+      if (changes.scopecreepSlackName) {
+        ownSlackName = ((changes.scopecreepSlackName.newValue) || "").trim();
+      }
+    });
+  } catch (_) {
+    /* no chrome.storage.onChanged in tests; loadSlackName is enough */
+  }
+
   console.log(
     `[ScopeCreep] loaded ${lexicon.phrases.length} phrases across ${lexicon.categories.length} categories`
   );
@@ -107,6 +132,28 @@
     ".c-message_kit__text",
     ".c-message_kit__blocks",
   ];
+  // Sender / author selectors — used to skip messages the user wrote
+  // themselves (T-022). Compared against the user-configured display name
+  // from chrome.storage.local.scopecreepSlackName.
+  const SENDER_SELECTORS = [
+    '[data-qa="message_sender_name"]',
+    ".c-message__sender",
+    ".c-message_kit__sender",
+    ".c-message_kit__sender_link",
+    "[data-message-sender]",
+    ".sender",
+  ];
+
+  function extractSender(messageEl) {
+    for (const sel of SENDER_SELECTORS) {
+      const el = messageEl.querySelector(sel);
+      if (el) {
+        const t = el.textContent.trim();
+        if (t) return t;
+      }
+    }
+    return "";
+  }
 
   function findMessages(root) {
     for (const sel of MESSAGE_SELECTORS) {
@@ -179,6 +226,17 @@
   function processMessage(messageEl) {
     if (messageEl.getAttribute(PROCESSED_ATTR)) return;
     messageEl.setAttribute(PROCESSED_ATTR, "1");
+
+    // Skip messages the user wrote themselves (T-022).
+    // Compares against scopecreepSlackName in chrome.storage. If unset
+    // (first-run before settings) → flag everything (legacy behavior).
+    if (ownSlackName) {
+      const sender = extractSender(messageEl);
+      if (sender && sender.toLowerCase() === ownSlackName.toLowerCase()) {
+        messageEl.setAttribute("data-scopecreep-self", "1");
+        return;
+      }
+    }
 
     const text = extractText(messageEl);
     if (!text || text.length < 5) return;

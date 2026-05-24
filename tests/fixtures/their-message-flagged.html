@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>their-message-flagged</title></head>
+<body>
+<!--
+  Same body as own-message.html but sender = "Jamie" (the client).
+  Used by the skip-own test to confirm the filter is sender-specific
+  and not breaking flagging for everyone.
+-->
+<div class="c-message_list">
+  <div data-qa="message_container" class="c-message_kit__message" id="m1">
+    <div class="c-message__sender" data-qa="message_sender_name">Jamie</div>
+    <div data-qa="message-text" class="p-rich_text_section">
+      Hey, can you also add a hover state? While you're at it, fix the spacing too.
+    </div>
+  </div>
+</div>
+</body>
+</html>

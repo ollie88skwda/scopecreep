@@ -18,44 +18,40 @@ const FLAGGED_ATTR = "data-scopecreep-flagged";
 
 // Helper: load fixture, stub chrome.runtime, inject lexicon + content script,
 // wait for the MutationObserver-driven scan to complete.
-async function loadFixtureWithScript(page, fixtureName) {
+// Optional `storageData` object pre-populates chrome.storage.local.get returns
+// (so tests can configure scopecreepSlackName etc).
+async function loadFixtureWithScript(page, fixtureName, storageData = {}) {
   const lexicon = fs.readFileSync(LEXICON_PATH, "utf8");
   const slackJs = fs.readFileSync(SLACK_JS_PATH, "utf8");
 
-  // Stub the chrome.runtime API the content script depends on.
-  // The script calls:
-  //   chrome.runtime.getURL("src/data/lexicon.json") + fetch(url)
-  //   chrome.runtime.sendMessage({...}).catch(...)
-  //   chrome.storage.local.set({...})
-  // We replace getURL with a data: URL containing the actual lexicon JSON,
-  // so fetch() returns the same content the extension would see in prod.
   const lexiconDataUrl =
     "data:application/json;base64," +
     Buffer.from(lexicon).toString("base64");
 
-  await page.addInitScript((dataUrl) => {
-    window.chrome = {
-      runtime: {
-        getURL: (p) => (p.endsWith("lexicon.json") ? dataUrl : p),
-        sendMessage: () => Promise.reject(new Error("no popup")),
-      },
-      storage: {
-        local: {
-          set: (_obj, cb) => cb && cb(),
-          get: (_keys, cb) => cb({}),
+  await page.addInitScript(
+    ({ dataUrl, storageData }) => {
+      window.chrome = {
+        runtime: {
+          getURL: (p) => (p.endsWith("lexicon.json") ? dataUrl : p),
+          sendMessage: () => Promise.reject(new Error("no popup")),
         },
-      },
-    };
-  }, lexiconDataUrl);
-
-  await page.goto(
-    "file://" + path.join(FIXTURES, fixtureName)
+        storage: {
+          local: {
+            set: (_obj, cb) => cb && cb(),
+            get: (keys, cb) => {
+              if (typeof keys === "string") cb({ [keys]: storageData[keys] });
+              else cb(storageData);
+            },
+          },
+          onChanged: { addListener: () => {} },
+        },
+      };
+    },
+    { dataUrl: lexiconDataUrl, storageData }
   );
-  await page.addScriptTag({ content: slackJs });
 
-  // Content script bootstraps async — wait for either a badge to appear OR
-  // the script's known "no flags" stable state (200ms of no DOM change after
-  // initial scans + observer).
+  await page.goto("file://" + path.join(FIXTURES, fixtureName));
+  await page.addScriptTag({ content: slackJs });
   await page.waitForTimeout(800);
 }
 
@@ -135,6 +131,40 @@ test.describe("ScopeCreep Slack content script", () => {
     const badge = page.locator(BADGE_SELECTOR).first();
     const severity = await badge.getAttribute("data-severity");
     expect(["low", "medium", "high"]).toContain(severity);
+  });
+});
+
+// ── T-022: skip own messages by display-name match ────────────────────────
+test.describe("skip own messages (T-022)", () => {
+  test("does NOT flag a message authored by the configured user", async ({ page }) => {
+    await loadFixtureWithScript(page, "own-message.html", {
+      scopecreepSlackName: "Test User",
+    });
+    await expect(page.locator(BADGE_SELECTOR)).toHaveCount(0);
+    await expect(page.locator(`[${FLAGGED_ATTR}]`)).toHaveCount(0);
+    // Sanity: the self-skip attribute is set so we know the code path ran
+    await expect(page.locator('[data-scopecreep-self="1"]')).toHaveCount(1);
+  });
+
+  test("DOES flag the same body when authored by someone else", async ({ page }) => {
+    await loadFixtureWithScript(page, "their-message-flagged.html", {
+      scopecreepSlackName: "Test User",
+    });
+    await expect(page.locator(BADGE_SELECTOR)).toHaveCount(1);
+    await expect(page.locator(`[${FLAGGED_ATTR}]`)).toHaveCount(1);
+  });
+
+  test("name match is case-insensitive", async ({ page }) => {
+    await loadFixtureWithScript(page, "own-message.html", {
+      scopecreepSlackName: "test user",
+    });
+    await expect(page.locator(BADGE_SELECTOR)).toHaveCount(0);
+  });
+
+  test("when scopecreepSlackName is unset, falls back to legacy 'flag everything' behavior", async ({ page }) => {
+    // No storage data → ownSlackName stays empty → skip logic not engaged.
+    await loadFixtureWithScript(page, "own-message.html", {});
+    await expect(page.locator(BADGE_SELECTOR)).toHaveCount(1);
   });
 });
 

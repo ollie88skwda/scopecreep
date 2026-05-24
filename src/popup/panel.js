@@ -17,6 +17,7 @@
   const STORAGE_RATE = "scopecreepHourlyRate";
   const STORAGE_SENDER = "scopecreepSender";
   const STORAGE_CLIENT = "scopecreepClient";
+  const STORAGE_SLACK_NAME = "scopecreepSlackName";
   const STORAGE_TEMPLATE = "scopecreepTemplateId";
   const STORAGE_ONBOARDED = "scopecreepOnboarded";
   const STORAGE_STATS = "scopecreepStats";
@@ -59,6 +60,7 @@
     setRate: document.getElementById("set-rate"),
     setSender: document.getElementById("set-sender"),
     setClient: document.getElementById("set-client"),
+    setSlackName: document.getElementById("set-slack-name"),
     settingsSave: document.getElementById("settings-save"),
     settingsCancel: document.getElementById("settings-cancel"),
 
@@ -230,6 +232,7 @@
     els.setRate.value = userPrefs.rate || "";
     els.setSender.value = userPrefs.sender || "";
     els.setClient.value = userPrefs.client || "";
+    els.setSlackName.value = userPrefs.slackName || "";
     showView("settings");
     setTimeout(() => els.setSOW.focus(), 50);
   }
@@ -245,6 +248,7 @@
       [STORAGE_RATE]: els.setRate.value.trim(),
       [STORAGE_SENDER]: els.setSender.value.trim(),
       [STORAGE_CLIENT]: els.setClient.value.trim(),
+      [STORAGE_SLACK_NAME]: els.setSlackName.value.trim(),
       [STORAGE_ONBOARDED]: true,
     };
     chrome.storage.local.set(next, () => {
@@ -252,6 +256,7 @@
       userPrefs.rate = next[STORAGE_RATE];
       userPrefs.sender = next[STORAGE_SENDER];
       userPrefs.client = next[STORAGE_CLIENT];
+      userPrefs.slackName = next[STORAGE_SLACK_NAME];
       closeSettings();
     });
   }
@@ -342,6 +347,7 @@
         STORAGE_RATE,
         STORAGE_SENDER,
         STORAGE_CLIENT,
+        STORAGE_SLACK_NAME,
         STORAGE_TEMPLATE,
         STORAGE_ONBOARDED,
       ],
@@ -351,6 +357,7 @@
           rate: data[STORAGE_RATE] || "",
           sender: data[STORAGE_SENDER] || "",
           client: data[STORAGE_CLIENT] || "",
+          slackName: data[STORAGE_SLACK_NAME] || "",
         };
         currentTemplateId =
           data[STORAGE_TEMPLATE] || templates.default_template_id;

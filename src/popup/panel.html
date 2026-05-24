@@ -401,6 +401,12 @@
       <div class="hint">Appears in the draft greeting. Leave blank to use "[client]" placeholder.</div>
     </div>
 
+    <div class="form-row">
+      <label for="set-slack-name">Your Slack display name <span style="color: var(--dim); text-transform: none; letter-spacing: 0;">(recommended)</span></label>
+      <input id="set-slack-name" type="text" placeholder="e.g. Ollie Nguyen" autocomplete="off">
+      <div class="hint">Exact text as it appears in Slack message headers. Used to skip your own messages so the extension only flags incoming client asks.</div>
+    </div>
+
     <div class="label" style="margin-top: 24px;">Your stats</div>
     <div class="stats-grid" id="stats-grid">
       <div class="stat"><div class="stat-n" id="stat-flagged">0</div><div class="stat-l">Flagged</div></div>

@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>own-message</title></head>
+<body>
+<!--
+  Sender = "Test User" — matches the scopecreepSlackName the test
+  configures via chrome.storage stub. Body contains scope-expansion
+  phrases that WOULD flag if this weren't the user's own message.
+  Expected: zero badges, data-scopecreep-self="1" set on the message.
+-->
+<div class="c-message_list">
+  <div data-qa="message_container" class="c-message_kit__message" id="m1">
+    <div class="c-message__sender" data-qa="message_sender_name">Test User</div>
+    <div data-qa="message-text" class="p-rich_text_section">
+      Hey, can you also add a hover state? While you're at it, fix the spacing too.
+    </div>
+  </div>
+</div>
+</body>
+</html>
