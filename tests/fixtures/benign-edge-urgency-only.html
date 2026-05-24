@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>benign-edge-urgency-only</title></head>
+<body>
+<!--
+  Edge case: contains low-severity "asap" alone. Per dec-038, threshold
+  for flagging is score >= 2. Single low-severity hit (asap, severity=low,
+  category urgency weight=0.6) = score 0.6 → should NOT flag.
+-->
+<div class="c-message_list">
+  <div data-qa="message_container" class="c-message_kit__message" id="m1">
+    <div data-qa="message-text" class="p-rich_text_section">
+      Need the deploy ASAP — the prod build is broken.
+    </div>
+  </div>
+</div>
+</body>
+</html>

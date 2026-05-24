@@ -1,0 +1,22 @@
+<!--
+  Slack DOM fixture base. Mirrors the structural selectors that
+  src/content/slack.js scans for:
+    - container: [data-qa="message_container"]
+    - text:      [data-qa="message-text"]
+
+  These are real attributes from Slack's web client (data-qa is QA-test
+  metadata that survives most CSS refactors). Other classes are simplified —
+  the content script's multi-fallback selectors should still find them.
+
+  Each fixture HTML in this dir extends this structure. Tests inject the
+  content script via Playwright's page.addInitScript / addScriptTag.
+-->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Slack fixture base</title></head>
+<body>
+<div class="c-message_list">
+  <!-- per-fixture messages slot in here -->
+</div>
+</body>
+</html>

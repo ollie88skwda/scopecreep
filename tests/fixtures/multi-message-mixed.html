@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>multi-message-mixed</title></head>
+<body>
+<!--
+  Mixed: 3 messages, only 2 should be flagged. Asserts that the content
+  script processes each message independently and the idempotency
+  attribute prevents double-processing across re-scans.
+-->
+<div class="c-message_list">
+  <div data-qa="message_container" class="c-message_kit__message" id="m1">
+    <div data-qa="message-text" class="p-rich_text_section">
+      Sounds good — kicking off Monday.
+    </div>
+  </div>
+  <div data-qa="message_container" class="c-message_kit__message" id="m2">
+    <div data-qa="message-text" class="p-rich_text_section">
+      One more thing — can you also add a dark mode toggle?
+    </div>
+  </div>
+  <div data-qa="message_container" class="c-message_kit__message" id="m3">
+    <div data-qa="message-text" class="p-rich_text_section">
+      Thanks, looks great.
+    </div>
+  </div>
+  <div data-qa="message_container" class="c-message_kit__message" id="m4">
+    <div data-qa="message-text" class="p-rich_text_section">
+      Actually we also need the analytics page reworked. Shouldn't take long.
+    </div>
+  </div>
+</div>
+</body>
+</html>
