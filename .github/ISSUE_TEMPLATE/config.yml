@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Privacy questions
+    url: mailto:hello@scopecreep.app
+    about: Email privacy or security concerns directly — not GitHub issues.
+  - name: Methodology / how the scoring works
+    url: https://scopecreep.app/methodology.html
+    about: Public explanation of the algorithm, lexicon counts, and what we explicitly don't do.

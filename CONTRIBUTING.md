@@ -154,14 +154,16 @@ Before opening a PR, please:
 
 ## Issue templates
 
-Coming soon (T-XXX). For now, open an issue with one of these prefixes:
+When you click "New issue" on GitHub you'll get a chooser with six templates. Pick the one that fits:
 
-- `lexicon:` — proposed phrase addition / removal
-- `fixture:` — Slack DOM change
-- `bug:` — extension misbehavior
-- `template:` — new email template tone
-- `docs:` — documentation fix
-- `question:` — anything else
+- **lexicon: propose a phrase** — add / remove / re-severity a scope-expansion phrase
+- **fixture: Slack DOM changed** — capture the new DOM shape so badges work again
+- **bug: something is broken** — anything misbehaving that isn't a Slack DOM change
+- **template: propose a new email tone** — draft a 5th tone variant or replace one
+- **docs: fix or improve documentation** — README / CHANGELOG / marketing / etc.
+- **question: ask anything** — open-ended
+
+Blank issues are disabled — please pick a template. Privacy / security questions go to `hello@scopecreep.app` (paper trail).
 
 ---
 
