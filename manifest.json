@@ -1,7 +1,21 @@
 {
   "manifest_version": 3,
   "name": "ScopeCreep Notary",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Catches scope-expanding client messages before they cost you money.",
-  "_comment": "Placeholder scaffold — full manifest comes in T-011"
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://app.slack.com/*"
+  ],
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "action": {
+    "default_popup": "src/popup/panel.html",
+    "default_title": "ScopeCreep Notary"
+  }
 }
