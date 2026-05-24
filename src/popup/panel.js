@@ -19,6 +19,24 @@
   const STORAGE_CLIENT = "scopecreepClient";
   const STORAGE_TEMPLATE = "scopecreepTemplateId";
   const STORAGE_ONBOARDED = "scopecreepOnboarded";
+  const STORAGE_STATS = "scopecreepStats";
+
+  function initStats() {
+    return {
+      flagged: 0,
+      dismissed: 0,
+      copied: 0,
+      since: new Date().toISOString(),
+    };
+  }
+
+  function bumpStat(key) {
+    chrome.storage.local.get(STORAGE_STATS, (data) => {
+      const stats = data[STORAGE_STATS] || initStats();
+      stats[key] = (stats[key] || 0) + 1;
+      chrome.storage.local.set({ [STORAGE_STATS]: stats }, renderStats);
+    });
+  }
 
   const els = {
     empty: document.getElementById("empty"),
@@ -43,6 +61,13 @@
     setClient: document.getElementById("set-client"),
     settingsSave: document.getElementById("settings-save"),
     settingsCancel: document.getElementById("settings-cancel"),
+
+    statsStrip: document.getElementById("stats-strip"),
+    statFlagged: document.getElementById("stat-flagged"),
+    statDismissed: document.getElementById("stat-dismissed"),
+    statCopied: document.getElementById("stat-copied"),
+    statsSince: document.getElementById("stats-since"),
+    statsReset: document.getElementById("stats-reset"),
   };
 
   let templates = null;
@@ -231,6 +256,31 @@
     });
   }
 
+  // ── Stats rendering ────────────────────────────────────────────────────────
+  function renderStats() {
+    chrome.storage.local.get(STORAGE_STATS, (data) => {
+      const stats = data[STORAGE_STATS] || initStats();
+      // Footer strip (visible in all views)
+      els.statsStrip.innerHTML =
+        `<span>${stats.flagged} flagged</span>` +
+        `<span class="sep">·</span>` +
+        `<span>${stats.dismissed} dismissed</span>` +
+        `<span class="sep">·</span>` +
+        `<span>${stats.copied} drafted</span>` +
+        `<span class="sep">·</span>` +
+        `<span>local-only</span>`;
+      // Settings expanded
+      if (els.statFlagged) els.statFlagged.textContent = stats.flagged;
+      if (els.statDismissed) els.statDismissed.textContent = stats.dismissed;
+      if (els.statCopied) els.statCopied.textContent = stats.copied;
+      if (els.statsSince && stats.since) {
+        const d = new Date(stats.since);
+        els.statsSince.textContent =
+          "Since " + d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+      }
+    });
+  }
+
   // ── Copy ───────────────────────────────────────────────────────────────────
   els.copyBtn.addEventListener("click", async () => {
     try {
@@ -241,19 +291,29 @@
         els.copyBtn.textContent = "Copy to clipboard";
         els.copyBtn.classList.remove("copied");
       }, 1600);
+      bumpStat("copied");
     } catch (err) {
       console.error("[ScopeCreep] clipboard write failed", err);
       els.draft.select();
       document.execCommand("copy");
+      bumpStat("copied");
     }
   });
 
   // ── Dismiss ────────────────────────────────────────────────────────────────
   els.dismissBtn.addEventListener("click", () => {
+    bumpStat("dismissed");
     chrome.storage.local.remove(STORAGE_KEY, () => {
       lastFlagged = null;
       showView("empty");
     });
+  });
+
+  // ── Stats reset ────────────────────────────────────────────────────────────
+  els.statsReset.addEventListener("click", () => {
+    if (window.confirm("Reset all stats? This can't be undone.")) {
+      chrome.storage.local.set({ [STORAGE_STATS]: initStats() }, renderStats);
+    }
   });
 
   // ── Settings actions ───────────────────────────────────────────────────────
@@ -307,6 +367,8 @@
         } else {
           showView("empty");
         }
+
+        renderStats();
       }
     );
   })();

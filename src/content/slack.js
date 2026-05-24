@@ -192,6 +192,24 @@
     );
     messageEl.dataset.scopecreepText = text;
     injectBadge(messageEl, result);
+    bumpStat("flagged");
+  }
+
+  function bumpStat(key) {
+    try {
+      chrome.storage.local.get("scopecreepStats", (data) => {
+        const stats = data.scopecreepStats || {
+          flagged: 0,
+          dismissed: 0,
+          copied: 0,
+          since: new Date().toISOString(),
+        };
+        stats[key] = (stats[key] || 0) + 1;
+        chrome.storage.local.set({ scopecreepStats: stats });
+      });
+    } catch (_) {
+      /* Extension context invalidated (rare); silently ignore. */
+    }
   }
 
   function scanAll() {

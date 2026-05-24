@@ -319,6 +319,42 @@
     color: var(--dim);
     font-style: italic;
   }
+
+  /* Stats */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .stats-grid .stat {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+  .stats-grid .stat-n {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+  .stats-grid .stat-l {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  #stats-strip {
+    font-variant-numeric: tabular-nums;
+  }
+  #stats-strip .sep {
+    color: var(--dim);
+    margin: 0 6px;
+  }
 </style>
 </head>
 <body>
@@ -365,7 +401,16 @@
       <div class="hint">Appears in the draft greeting. Leave blank to use "[client]" placeholder.</div>
     </div>
 
-    <div class="actions">
+    <div class="label" style="margin-top: 24px;">Your stats</div>
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat"><div class="stat-n" id="stat-flagged">0</div><div class="stat-l">Flagged</div></div>
+      <div class="stat"><div class="stat-n" id="stat-dismissed">0</div><div class="stat-l">Dismissed</div></div>
+      <div class="stat"><div class="stat-n" id="stat-copied">0</div><div class="stat-l">Drafted</div></div>
+    </div>
+    <div class="hint" id="stats-since" style="margin-bottom: 16px;">Since —</div>
+    <button class="ghost" id="stats-reset" style="font-size: 11px; padding: 6px 10px;">Reset stats</button>
+
+    <div class="actions" style="margin-top: 18px;">
       <button class="primary" id="settings-save">Save</button>
       <button class="ghost" id="settings-cancel">Cancel</button>
     </div>
@@ -395,8 +440,8 @@
 </main>
 
 <footer>
-  <div>schema v1 · local-only</div>
-  <a href="#" id="settings-link">Set rate &amp; SOW</a>
+  <div id="stats-strip">local-only</div>
+  <a href="#" id="settings-link">Settings</a>
 </footer>
 
 <script src="panel.js"></script>
