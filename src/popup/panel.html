@@ -340,6 +340,48 @@
     font-family: ui-monospace, "SF Mono", Menlo, monospace;
   }
 
+  /* Test-mode result */
+  .test-verdict {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+  .test-verdict.flag { border-color: rgba(212,166,74,0.4); background: rgba(212,166,74,0.06); }
+  .test-verdict.high { border-color: rgba(201,90,74,0.4); background: rgba(201,90,74,0.06); }
+  .test-verdict.pass { border-color: rgba(52,211,153,0.4); background: rgba(52,211,153,0.06); }
+  .test-verdict .head {
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .test-verdict.flag .head { color: var(--accent); }
+  .test-verdict.high .head { color: var(--warn); }
+  .test-verdict.pass .head { color: var(--ok); }
+  .test-verdict .score {
+    color: var(--muted);
+    font-size: 11px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    margin-bottom: 8px;
+  }
+  .test-verdict .hits-mini {
+    font-size: 12px;
+    color: var(--ink);
+  }
+  .test-verdict .hits-mini .h {
+    display: inline-block;
+    background: #1a1a1a;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 2px 6px;
+    margin: 2px 4px 2px 0;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 11px;
+  }
+
   /* Recent errors list in settings */
   .errors-list {
     background: var(--panel);
@@ -460,6 +502,14 @@
       <input id="set-slack-name" type="text" placeholder="e.g. Ollie Nguyen" autocomplete="off">
       <div class="hint">Exact text as it appears in Slack message headers. Used to skip your own messages so the extension only flags incoming client asks.</div>
     </div>
+
+    <div class="label" style="margin-top: 24px;">Test mode</div>
+    <div class="form-row">
+      <textarea id="test-input" placeholder="Paste a sample client message to see if (and why) the extension would flag it. Nothing is sent anywhere — runs the same lexicon scan locally."></textarea>
+      <div class="hint">Pre-populated with a known scope-creep example. Edit and click "Test scoring" to try your own.</div>
+    </div>
+    <button class="primary" id="test-run" style="font-size: 11px; padding: 6px 12px;">Test scoring</button>
+    <div id="test-result" style="display:none; margin-top: 12px;"></div>
 
     <div class="label" style="margin-top: 24px;">Recent errors</div>
     <div class="errors-list" id="errors-list"></div>

@@ -96,12 +96,23 @@
     errorBannerText: document.getElementById("error-banner-text"),
     errorsList: document.getElementById("errors-list"),
     errorsClear: document.getElementById("errors-clear"),
+
+    testInput: document.getElementById("test-input"),
+    testRun: document.getElementById("test-run"),
+    testResult: document.getElementById("test-result"),
   };
 
   let templates = null;
+  let lexicon = null;            // loaded lazily for the test-mode UI
+  let categoryWeight = new Map();
   let currentTemplateId = null;
   let lastFlagged = null;
   let userPrefs = {}; // rate, sender, client, sow
+
+  const FLAG_THRESHOLD = 2;
+  const SEVERITY_WEIGHT = { low: 1, medium: 2, high: 3 };
+  const TEST_SAMPLE =
+    "Looks great! Can you also add a hover state to all the buttons? While you're at it, fix the spacing on the cards too — shouldn't take long.";
 
   // ── View routing ───────────────────────────────────────────────────────────
   function showView(name) {
@@ -132,6 +143,43 @@
         ],
       };
     }
+  }
+
+  // Mirror of slack.js scoring — duplicated per dec-082 (no shared modules
+  // in MV3 without a bundler). Used by test-mode UI.
+  async function loadLexiconForTest() {
+    if (lexicon) return lexicon;
+    try {
+      const url = chrome.runtime.getURL("src/data/lexicon.json");
+      const res = await fetch(url);
+      lexicon = await res.json();
+      categoryWeight = new Map(
+        (lexicon.categories || []).map((c) => [c.id, c.weight ?? 1.0])
+      );
+    } catch (err) {
+      logError("test-lexicon-fetch", err && err.message ? err.message : String(err));
+      lexicon = { phrases: [], categories: [] };
+    }
+    return lexicon;
+  }
+
+  function scoreMessage(text) {
+    const lower = text.toLowerCase();
+    const hits = [];
+    let score = 0;
+    for (const entry of (lexicon && lexicon.phrases) || []) {
+      if (lower.includes(entry.phrase)) {
+        const w = categoryWeight.get(entry.category) ?? 1.0;
+        score += (SEVERITY_WEIGHT[entry.severity] ?? 1) * w;
+        hits.push({
+          id: entry.id,
+          phrase: entry.phrase,
+          category: entry.category,
+          severity: entry.severity,
+        });
+      }
+    }
+    return { score, hits };
   }
 
   function interpolate(template, vars) {
@@ -260,6 +308,7 @@
     els.setSender.value = userPrefs.sender || "";
     els.setClient.value = userPrefs.client || "";
     els.setSlackName.value = userPrefs.slackName || "";
+    if (!els.testInput.value) els.testInput.value = TEST_SAMPLE;
     showView("settings");
     setTimeout(() => els.setSOW.focus(), 50);
   }
@@ -399,6 +448,60 @@
   // ── Errors clear ───────────────────────────────────────────────────────────
   els.errorsClear.addEventListener("click", () => {
     chrome.storage.local.set({ [STORAGE_ERRORS]: [] }, renderErrors);
+  });
+
+  // ── Test mode ──────────────────────────────────────────────────────────────
+  async function runTest() {
+    await loadLexiconForTest();
+    const text = (els.testInput.value || "").trim();
+    if (!text) {
+      els.testResult.style.display = "none";
+      return;
+    }
+    const { score, hits } = scoreMessage(text);
+    const wouldFlag = score >= FLAG_THRESHOLD;
+    const topSev = hits.reduce(
+      (a, h) => Math.max(a, SEVERITY_WEIGHT[h.severity] || 0),
+      0
+    );
+    const cls = !wouldFlag ? "pass" : topSev >= 3 ? "high" : "flag";
+    const headText = !wouldFlag
+      ? `No flag (score ${score.toFixed(1)} < threshold ${FLAG_THRESHOLD})`
+      : topSev >= 3
+      ? `Would flag (high severity, score ${score.toFixed(1)})`
+      : `Would flag (score ${score.toFixed(1)})`;
+
+    let hitsHtml = "";
+    if (hits.length > 0) {
+      hitsHtml =
+        `<div class="hits-mini">` +
+        hits
+          .map(
+            (h) =>
+              `<span class="h" title="${esc(h.category)} · ${esc(h.severity)}">${esc(h.phrase)}</span>`
+          )
+          .join("") +
+        `</div>`;
+    } else {
+      hitsHtml = `<div class="hits-mini" style="color: var(--muted);">No matching phrases.</div>`;
+    }
+
+    els.testResult.innerHTML =
+      `<div class="test-verdict ${cls}">` +
+      `<div class="head">${esc(headText)}</div>` +
+      `<div class="score">${hits.length} hit${hits.length === 1 ? "" : "s"} · top severity ${
+        topSev === 3 ? "high" : topSev === 2 ? "medium" : topSev === 1 ? "low" : "—"
+      }</div>` +
+      hitsHtml +
+      `</div>`;
+    els.testResult.style.display = "block";
+  }
+  els.testRun.addEventListener("click", runTest);
+  els.testInput.addEventListener("keydown", (ev) => {
+    if (ev.key === "Enter" && (ev.metaKey || ev.ctrlKey)) {
+      ev.preventDefault();
+      runTest();
+    }
   });
 
   // ── Settings actions ───────────────────────────────────────────────────────
