@@ -240,15 +240,13 @@ Quick facts:
 
 ## Contributing
 
-Issues + PRs welcome. Especially:
-- **Lexicon additions** — phrases you've personally hit. Open an issue with the phrase + a real (anonymized) example. PRs to `src/data/lexicon.json` get fast-tracked.
-- **DOM fixture updates** — if Slack ships a UI change and your badges break, capture the new DOM, add a fixture, send the PR.
-- **Translations** — if you want a non-English lexicon, open an issue describing the language/locale.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for full guide. Quick version:
 
-Please don't PR:
-- New runtime dependencies — the no-network, no-build, no-framework architecture is load-bearing.
-- Telemetry of any kind — privacy stance is non-negotiable.
-- LLM calls in the request path — methodology page promises deterministic scoring.
+**Welcome**: lexicon additions, DOM fixture updates, translations, bug fixes, template additions.
+
+**Not welcome**: new runtime deps, telemetry, LLM calls in the request path, CSS frameworks, build steps for the extension.
+
+PRs need passing tests (`npm test`) + a `CHANGELOG.md` entry.
 
 ---
 
@@ -262,7 +260,7 @@ See `voice/HANDOFF.html` for the operator-workspace briefing if you're picking u
 
 ## License
 
-MIT (intended — see `LICENSE` file once finalized in T-XXX).
+[MIT](./LICENSE) — Copyright © 2026 Oliver Nguyen.
 
 ---
 
