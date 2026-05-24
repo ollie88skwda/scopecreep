@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "updated_at": "2026-05-24",
+  "interpolation_notes": "Tokens: {phrase} (the flagged trigger phrase, verbatim from lexicon match), {rate} (hourly rate from storage, or fallback string), {hours} (placeholder for user-entered estimate), {date} (placeholder for revised delivery date), {client} (client name placeholder), {sender} (freelancer name placeholder). Replacement is literal — no escaping needed inside templates. Unknown tokens are left as-is so the user sees what's missing.",
+  "default_template_id": "neutral_professional",
+  "templates": [
+    {
+      "id": "neutral_professional",
+      "label": "Neutral",
+      "description": "Respectful + businesslike. Safe default for most clients.",
+      "subject": "Quick note on scope — change order",
+      "body": "Hi {client},\n\nThanks for flagging this — happy to include it. To keep the project on track and the original timeline intact, I'll send over a quick change order:\n\n> \"{phrase}\"\n\nEstimate: {hours} at {rate}, with a revised delivery date of {date}. Once you confirm, I'll get started on it.\n\nBest,\n{sender}\n"
+    },
+    {
+      "id": "friendly_firm",
+      "label": "Friendly",
+      "description": "Warmer opener, same firmness on the ask. Good for established or casual client relationships.",
+      "subject": "Loving the direction — quick scope note",
+      "body": "Hey {client},\n\nGreat call on this one — totally see why it'd improve things. To make sure we keep everything moving smoothly without surprises on the timeline, I'll send a short change order for the addition:\n\n> \"{phrase}\"\n\nLooking at roughly {hours} on this, billed at {rate}. New delivery: {date}. Reply with a 👍 and I'll roll it in.\n\nCheers,\n{sender}\n"
+    },
+    {
+      "id": "concise_direct",
+      "label": "Concise",
+      "description": "Minimal text, no preamble. For fast-paced clients who prefer telegraphic exchanges.",
+      "subject": "Change order — new ask",
+      "body": "Hi {client},\n\nNew scope:\n> \"{phrase}\"\n\n{hours} at {rate}. Revised delivery: {date}.\n\nConfirm to proceed.\n\n{sender}\n"
+    },
+    {
+      "id": "detailed_formal",
+      "label": "Formal",
+      "description": "Full change-order documentation. For clients in regulated industries or anyone who needs the paper trail.",
+      "subject": "Change order request — {date}",
+      "body": "Hi {client},\n\nThis message documents a change request that extends the agreed Statement of Work.\n\nREQUEST CONTEXT:\nThe following ask was raised, which falls outside the current scope:\n\n> \"{phrase}\"\n\nPROPOSED CHANGE ORDER:\n  • Scope addition: as quoted above\n  • Estimated effort: {hours}\n  • Rate: {rate}\n  • Revised delivery date: {date}\n  • All other SOW terms remain unchanged\n\nPlease reply with explicit confirmation (\"approved\" or equivalent) to authorize this change order. Without confirmation, the original SOW scope and timeline remain in effect.\n\nBest regards,\n{sender}\n"
+    }
+  ]
+}
