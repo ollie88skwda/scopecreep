@@ -225,13 +225,107 @@
     margin-top: 12px;
     letter-spacing: 0.04em;
   }
+
+  /* Settings form */
+  .form-row { margin-bottom: 14px; }
+  .form-row label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .form-row .hint {
+    font-size: 11px;
+    color: var(--dim);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+  .form-row input[type="text"],
+  .form-row textarea {
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 8px 12px;
+    border-radius: 5px;
+  }
+  .form-row input[type="text"]:focus,
+  .form-row textarea:focus {
+    outline: none;
+    border-color: var(--line-strong);
+  }
+  .form-row textarea {
+    min-height: 140px;
+    resize: vertical;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 12px;
+  }
+  .form-row .pair {
+    display: flex;
+    gap: 8px;
+  }
+  .form-row .pair > div { flex: 1; }
+
+  .settings-intro {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    padding: 10px 14px;
+    background: rgba(129,140,248,0.06);
+    border-left: 2px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+  }
+  .settings-intro.first-run {
+    background: rgba(212,166,74,0.08);
+    border-left-color: var(--accent);
+    color: var(--ink);
+  }
+
+  /* SOW snippet under flagged trigger */
+  .sow-context {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-top: 8px;
+  }
+  .sow-context .sow-label {
+    color: var(--dim);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+  .sow-context .sow-body {
+    color: var(--ink);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 11px;
+    white-space: pre-wrap;
+    max-height: 80px;
+    overflow-y: auto;
+  }
+  .sow-context.unset {
+    color: var(--dim);
+    font-style: italic;
+  }
 </style>
 </head>
 <body>
 
 <header>
   <div class="name">ScopeCreep <span class="slash">/</span> Notary</div>
-  <div class="ver" id="ver">v0.2.0</div>
+  <div class="ver" id="ver">v0.3.0</div>
 </header>
 
 <main id="main">
@@ -241,12 +335,53 @@
     <div class="hint">Open Slack in another tab. Flagged client messages will appear here when you click their badge.</div>
   </div>
 
+  <div id="settings" style="display:none;">
+    <div class="settings-intro" id="settings-intro">
+      Set your defaults below. Everything is stored locally on this device — nothing is sent to any server.
+    </div>
+
+    <div class="form-row">
+      <label for="set-sow">Your SOW / project scope</label>
+      <textarea id="set-sow" placeholder="Paste your statement of work, scope summary, or original project brief here. The extension references this when drafting change orders."></textarea>
+      <div class="hint">Used as reference context, not analyzed by AI.</div>
+    </div>
+
+    <div class="form-row">
+      <div class="pair">
+        <div>
+          <label for="set-rate">Hourly rate</label>
+          <input id="set-rate" type="text" placeholder="$150/hr" autocomplete="off">
+        </div>
+        <div>
+          <label for="set-sender">Your name</label>
+          <input id="set-sender" type="text" placeholder="Alex" autocomplete="off">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label for="set-client">Default client name <span style="color: var(--dim); text-transform: none; letter-spacing: 0;">(optional)</span></label>
+      <input id="set-client" type="text" placeholder="e.g. Jamie" autocomplete="off">
+      <div class="hint">Appears in the draft greeting. Leave blank to use "[client]" placeholder.</div>
+    </div>
+
+    <div class="actions">
+      <button class="primary" id="settings-save">Save</button>
+      <button class="ghost" id="settings-cancel">Cancel</button>
+    </div>
+  </div>
+
   <div id="content" style="display:none;">
     <div class="label">Flagged message</div>
     <div class="quote" id="quote">—</div>
 
     <div class="label">Detected patterns <span id="hit-count" style="color: var(--dim); font-weight: 400; margin-left: 4px;"></span></div>
     <div class="hits" id="hits"></div>
+
+    <div class="sow-context" id="sow-context">
+      <div class="sow-label">Compared against your SOW</div>
+      <div class="sow-body" id="sow-body"></div>
+    </div>
 
     <div class="label">Suggested change-order email</div>
     <div class="picker" id="picker"></div>

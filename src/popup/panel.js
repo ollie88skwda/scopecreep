@@ -1,16 +1,13 @@
 // ScopeCreep Notary — popup panel logic
 //
-// Renders the most recently flagged Slack message + a change-order draft
-// generated from one of N templates (src/data/templates.json). User picks the
-// template via the button-group above the textarea; choice persists across
-// panel opens.
+// Three views (only one visible at a time):
+//   - #empty    — nothing flagged yet (CTA to open Slack)
+//   - #content  — flagged message + draft
+//   - #settings — onboarding / settings form (SOW, rate, names)
 //
-// Data sources:
-//   - chrome.storage.local.scopecreepLastClick — written by content script
-//   - chrome.runtime.onMessage "scopecreep:flagged-clicked" — live updates
-//   - chrome.storage.local.scopecreepHourlyRate — user-entered hourly rate
-//   - chrome.storage.local.scopecreepTemplateId — last-used template id
-//   - src/data/templates.json — fetched at startup
+// First-run detection: if neither SOW nor rate is set in storage, the panel
+// opens directly into the settings view (T-016 onboarding). After save, it
+// returns to the empty/flagged view depending on whether a click context exists.
 
 (function () {
   "use strict";
@@ -18,12 +15,20 @@
   const STORAGE_KEY = "scopecreepLastClick";
   const STORAGE_SOW = "scopecreepSOW";
   const STORAGE_RATE = "scopecreepHourlyRate";
+  const STORAGE_SENDER = "scopecreepSender";
+  const STORAGE_CLIENT = "scopecreepClient";
   const STORAGE_TEMPLATE = "scopecreepTemplateId";
+  const STORAGE_ONBOARDED = "scopecreepOnboarded";
 
   const els = {
     empty: document.getElementById("empty"),
     content: document.getElementById("content"),
+    settings: document.getElementById("settings"),
+    settingsIntro: document.getElementById("settings-intro"),
+
     quote: document.getElementById("quote"),
+    sowContext: document.getElementById("sow-context"),
+    sowBody: document.getElementById("sow-body"),
     hits: document.getElementById("hits"),
     hitCount: document.getElementById("hit-count"),
     picker: document.getElementById("picker"),
@@ -31,14 +36,28 @@
     copyBtn: document.getElementById("copy-btn"),
     dismissBtn: document.getElementById("dismiss-btn"),
     settingsLink: document.getElementById("settings-link"),
+
+    setSOW: document.getElementById("set-sow"),
+    setRate: document.getElementById("set-rate"),
+    setSender: document.getElementById("set-sender"),
+    setClient: document.getElementById("set-client"),
+    settingsSave: document.getElementById("settings-save"),
+    settingsCancel: document.getElementById("settings-cancel"),
   };
 
-  // State the panel needs to render
-  let templates = null;          // loaded from templates.json
-  let currentTemplateId = null;  // active template id
-  let lastFlagged = null;        // {hits, text, ts}
+  let templates = null;
+  let currentTemplateId = null;
+  let lastFlagged = null;
+  let userPrefs = {}; // rate, sender, client, sow
 
-  // ── Template loading ───────────────────────────────────────────────────────
+  // ── View routing ───────────────────────────────────────────────────────────
+  function showView(name) {
+    els.empty.style.display = name === "empty" ? "block" : "none";
+    els.content.style.display = name === "content" ? "block" : "none";
+    els.settings.style.display = name === "settings" ? "block" : "none";
+  }
+
+  // ── Templates ──────────────────────────────────────────────────────────────
   async function loadTemplates() {
     try {
       const url = chrome.runtime.getURL("src/data/templates.json");
@@ -46,7 +65,6 @@
       templates = await res.json();
     } catch (err) {
       console.error("[ScopeCreep] failed to load templates:", err);
-      // Fallback: one minimal template inline so the UI doesn't break
       templates = {
         default_template_id: "fallback",
         templates: [
@@ -62,7 +80,6 @@
     }
   }
 
-  // ── Template interpolation ─────────────────────────────────────────────────
   function interpolate(template, vars) {
     return template.replace(/\{(\w+)\}/g, (m, key) =>
       vars[key] !== undefined && vars[key] !== "" ? vars[key] : m
@@ -78,7 +95,7 @@
     );
   }
 
-  // ── Picker UI ──────────────────────────────────────────────────────────────
+  // ── Picker ─────────────────────────────────────────────────────────────────
   function renderPicker() {
     if (!templates) return;
     els.picker.innerHTML = "";
@@ -98,55 +115,60 @@
     }
   }
 
-  // ── Draft rendering ────────────────────────────────────────────────────────
+  // ── SOW excerpt under flagged trigger ─────────────────────────────────────
+  function renderSOW() {
+    const sow = userPrefs.sow;
+    if (!sow || !sow.trim()) {
+      els.sowContext.classList.add("unset");
+      els.sowBody.textContent = "No SOW set. Click 'Settings' below to paste yours.";
+      return;
+    }
+    els.sowContext.classList.remove("unset");
+    const MAX = 300;
+    els.sowBody.textContent =
+      sow.length > MAX ? sow.slice(0, MAX) + " …" : sow;
+  }
+
+  // ── Draft ──────────────────────────────────────────────────────────────────
   function renderDraft() {
     if (!lastFlagged || !templates) return;
     const tmpl = getTemplate(currentTemplateId);
     if (!tmpl) return;
 
-    chrome.storage.local.get([STORAGE_RATE], (cfg) => {
-      const sortedHits = [...lastFlagged.hits].sort(
-        (a, b) => sevRank(b.severity) - sevRank(a.severity)
-      );
-      const topHit = sortedHits[0];
+    const sortedHits = [...lastFlagged.hits].sort(
+      (a, b) => sevRank(b.severity) - sevRank(a.severity)
+    );
+    const topHit = sortedHits[0];
 
-      const vars = {
-        phrase: topHit ? topHit.phrase : "[trigger phrase]",
-        rate: cfg[STORAGE_RATE] || "[your hourly rate]",
-        hours: "[X] hours",
-        date: "[revised date]",
-        client: "[client]",
-        sender: "[your name]",
-      };
+    const vars = {
+      phrase: topHit ? topHit.phrase : "[trigger phrase]",
+      rate: userPrefs.rate || "[your hourly rate]",
+      hours: "[X] hours",
+      date: "[revised date]",
+      client: userPrefs.client || "[client]",
+      sender: userPrefs.sender || "[your name]",
+    };
 
-      const subject = interpolate(tmpl.subject, vars);
-      const body = interpolate(tmpl.body, vars);
-      els.draft.value = `Subject: ${subject}\n\n${body}`;
-    });
+    const subject = interpolate(tmpl.subject, vars);
+    const body = interpolate(tmpl.body, vars);
+    els.draft.value = `Subject: ${subject}\n\n${body}`;
   }
 
-  // ── Rendering: hits + quote ────────────────────────────────────────────────
-  function showEmpty() {
-    els.empty.style.display = "block";
-    els.content.style.display = "none";
-  }
-
+  // ── Show flagged ───────────────────────────────────────────────────────────
   function showFlagged(flagged) {
-    if (!flagged || !flagged.hits || flagged.hits.length === 0)
-      return showEmpty();
-
+    if (!flagged || !flagged.hits || flagged.hits.length === 0) {
+      showView("empty");
+      return;
+    }
     lastFlagged = flagged;
-    els.empty.style.display = "none";
-    els.content.style.display = "block";
+    showView("content");
 
-    // Quote (truncated)
     const MAX = 600;
     els.quote.textContent =
       flagged.text.length > MAX
         ? flagged.text.slice(0, MAX) + " …"
         : flagged.text;
 
-    // Hits
     els.hitCount.textContent = `(${flagged.hits.length})`;
     els.hits.innerHTML = "";
     const sorted = [...flagged.hits].sort(
@@ -163,8 +185,50 @@
       els.hits.appendChild(row);
     }
 
+    renderSOW();
     renderPicker();
     renderDraft();
+  }
+
+  // ── Settings view ──────────────────────────────────────────────────────────
+  function openSettings({ firstRun = false } = {}) {
+    if (firstRun) {
+      els.settingsIntro.classList.add("first-run");
+      els.settingsIntro.textContent =
+        "Welcome. Set your defaults below so change-order drafts come out ready to send. Everything stays on this device.";
+    } else {
+      els.settingsIntro.classList.remove("first-run");
+      els.settingsIntro.textContent =
+        "Set your defaults below. Everything is stored locally on this device — nothing is sent to any server.";
+    }
+    els.setSOW.value = userPrefs.sow || "";
+    els.setRate.value = userPrefs.rate || "";
+    els.setSender.value = userPrefs.sender || "";
+    els.setClient.value = userPrefs.client || "";
+    showView("settings");
+    setTimeout(() => els.setSOW.focus(), 50);
+  }
+
+  function closeSettings() {
+    if (lastFlagged) showFlagged(lastFlagged);
+    else showView("empty");
+  }
+
+  function saveSettings() {
+    const next = {
+      [STORAGE_SOW]: els.setSOW.value.trim(),
+      [STORAGE_RATE]: els.setRate.value.trim(),
+      [STORAGE_SENDER]: els.setSender.value.trim(),
+      [STORAGE_CLIENT]: els.setClient.value.trim(),
+      [STORAGE_ONBOARDED]: true,
+    };
+    chrome.storage.local.set(next, () => {
+      userPrefs.sow = next[STORAGE_SOW];
+      userPrefs.rate = next[STORAGE_RATE];
+      userPrefs.sender = next[STORAGE_SENDER];
+      userPrefs.client = next[STORAGE_CLIENT];
+      closeSettings();
+    });
   }
 
   // ── Copy ───────────────────────────────────────────────────────────────────
@@ -186,24 +250,19 @@
 
   // ── Dismiss ────────────────────────────────────────────────────────────────
   els.dismissBtn.addEventListener("click", () => {
-    chrome.storage.local.remove(STORAGE_KEY, showEmpty);
+    chrome.storage.local.remove(STORAGE_KEY, () => {
+      lastFlagged = null;
+      showView("empty");
+    });
   });
 
-  // ── Settings link (T-016 will replace this with a real onboarding view) ────
+  // ── Settings actions ───────────────────────────────────────────────────────
   els.settingsLink.addEventListener("click", (ev) => {
     ev.preventDefault();
-    const cur = els.settingsLink.dataset.rate || "";
-    const rate = window.prompt(
-      "Your hourly rate (e.g. $150/hr). Stored locally only.",
-      cur
-    );
-    if (rate !== null && rate.trim()) {
-      chrome.storage.local.set({ [STORAGE_RATE]: rate.trim() }, () => {
-        els.settingsLink.dataset.rate = rate.trim();
-        renderDraft();
-      });
-    }
+    openSettings({ firstRun: false });
   });
+  els.settingsSave.addEventListener("click", saveSettings);
+  els.settingsCancel.addEventListener("click", closeSettings);
 
   // ── Live updates while panel is open ───────────────────────────────────────
   chrome.runtime.onMessage.addListener((msg) => {
@@ -217,16 +276,36 @@
     await loadTemplates();
 
     chrome.storage.local.get(
-      [STORAGE_KEY, STORAGE_RATE, STORAGE_TEMPLATE],
+      [
+        STORAGE_KEY,
+        STORAGE_SOW,
+        STORAGE_RATE,
+        STORAGE_SENDER,
+        STORAGE_CLIENT,
+        STORAGE_TEMPLATE,
+        STORAGE_ONBOARDED,
+      ],
       (data) => {
-        if (data[STORAGE_RATE]) els.settingsLink.dataset.rate = data[STORAGE_RATE];
+        userPrefs = {
+          sow: data[STORAGE_SOW] || "",
+          rate: data[STORAGE_RATE] || "",
+          sender: data[STORAGE_SENDER] || "",
+          client: data[STORAGE_CLIENT] || "",
+        };
         currentTemplateId =
           data[STORAGE_TEMPLATE] || templates.default_template_id;
 
-        if (data[STORAGE_KEY] && data[STORAGE_KEY].hits) {
+        const onboarded =
+          !!data[STORAGE_ONBOARDED] ||
+          !!userPrefs.sow ||
+          !!userPrefs.rate; // pre-T-016 installs grandfathered in if they set anything
+
+        if (!onboarded) {
+          openSettings({ firstRun: true });
+        } else if (data[STORAGE_KEY] && data[STORAGE_KEY].hits) {
           showFlagged(data[STORAGE_KEY]);
         } else {
-          showEmpty();
+          showView("empty");
         }
       }
     );
