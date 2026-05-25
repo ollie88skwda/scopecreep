@@ -4,261 +4,2000 @@
   "matcher_notes": "All phrases match case-insensitively as substrings of the incoming client message after lowercasing. Phrases are stored lowercase. Word-boundary risk is low because phrases are multi-word and specific. Regex flexibility deferred to v2 (see voice/decisions.html dec-031).",
   "scoring_notes": "Severity controls badge color in the popup. low = ambient watch, medium = likely scope-expansion, high = clear unbilled-work ask. The matcher sums severities for the per-message score; messages with combined score >= 2 should be flagged prominently.",
   "categories": [
-    {"id": "additive",            "label": "Additive — \"can you also...\"",                "weight": 1.0},
-    {"id": "trivialize",          "label": "Trivializing — \"quick / small / tiny\"",       "weight": 0.9},
-    {"id": "vague_future",        "label": "Vague-future — \"I was thinking...\"",          "weight": 0.7},
-    {"id": "scope_shift",         "label": "Scope shift — \"actually let's pivot\"",        "weight": 1.2},
-    {"id": "urgency",             "label": "Urgency — \"by tomorrow\" / \"ASAP\"",          "weight": 0.6},
-    {"id": "relationship_leverage","label": "Relationship leverage — \"since you're here\"","weight": 1.0},
-    {"id": "comparison_shame",    "label": "Comparison shame — \"the old designer...\"",    "weight": 1.0},
-    {"id": "specification_creep", "label": "Spec creep — \"make it more...\"",              "weight": 0.8},
-    {"id": "revision_cycle",      "label": "Revision cycle — \"just one more round\"",      "weight": 1.0},
-    {"id": "deferred_spec",       "label": "Deferred spec — \"we forgot to mention\"",      "weight": 1.1},
-    {"id": "technical_creep",     "label": "Technical creep — \"also needs to work on...\"","weight": 1.0},
-    {"id": "assumption",          "label": "Assumption — \"I assume this includes...\"",    "weight": 0.9},
-    {"id": "emotional_coercion",  "label": "Emotional coercion — \"we really need this\"",  "weight": 0.7},
-    {"id": "fake_question",       "label": "Fake question — \"if you have a sec...\"",      "weight": 0.6},
-    {"id": "favor_framing",       "label": "Favor framing — \"shouldn't take long\"",       "weight": 0.9}
+    {
+      "id": "additive",
+      "label": "Additive \u2014 \"can you also...\"",
+      "weight": 1.0
+    },
+    {
+      "id": "trivialize",
+      "label": "Trivializing \u2014 \"quick / small / tiny\"",
+      "weight": 0.9
+    },
+    {
+      "id": "vague_future",
+      "label": "Vague-future \u2014 \"I was thinking...\"",
+      "weight": 0.7
+    },
+    {
+      "id": "scope_shift",
+      "label": "Scope shift \u2014 \"actually let's pivot\"",
+      "weight": 1.2
+    },
+    {
+      "id": "urgency",
+      "label": "Urgency \u2014 \"by tomorrow\" / \"ASAP\"",
+      "weight": 0.6
+    },
+    {
+      "id": "relationship_leverage",
+      "label": "Relationship leverage \u2014 \"since you're here\"",
+      "weight": 1.0
+    },
+    {
+      "id": "comparison_shame",
+      "label": "Comparison shame \u2014 \"the old designer...\"",
+      "weight": 1.0
+    },
+    {
+      "id": "specification_creep",
+      "label": "Spec creep \u2014 \"make it more...\"",
+      "weight": 0.8
+    },
+    {
+      "id": "revision_cycle",
+      "label": "Revision cycle \u2014 \"just one more round\"",
+      "weight": 1.0
+    },
+    {
+      "id": "deferred_spec",
+      "label": "Deferred spec \u2014 \"we forgot to mention\"",
+      "weight": 1.1
+    },
+    {
+      "id": "technical_creep",
+      "label": "Technical creep \u2014 \"also needs to work on...\"",
+      "weight": 1.0
+    },
+    {
+      "id": "assumption",
+      "label": "Assumption \u2014 \"I assume this includes...\"",
+      "weight": 0.9
+    },
+    {
+      "id": "emotional_coercion",
+      "label": "Emotional coercion \u2014 \"we really need this\"",
+      "weight": 0.7
+    },
+    {
+      "id": "fake_question",
+      "label": "Fake question \u2014 \"if you have a sec...\"",
+      "weight": 0.6
+    },
+    {
+      "id": "favor_framing",
+      "label": "Favor framing \u2014 \"shouldn't take long\"",
+      "weight": 0.9
+    }
   ],
   "phrases": [
-    {"id": "ADD-001", "phrase": "can you also",           "category": "additive", "severity": "medium", "example": "Looks great! Can you also add a hover state to all the buttons?"},
-    {"id": "ADD-002", "phrase": "can we also",            "category": "additive", "severity": "medium", "example": "Love it. Can we also throw in a quick onboarding video?"},
-    {"id": "ADD-003", "phrase": "could you also",         "category": "additive", "severity": "medium", "example": "Could you also wire up the email notifications while you're at it?"},
-    {"id": "ADD-004", "phrase": "could we also",          "category": "additive", "severity": "medium", "example": "Could we also have a dark mode version?"},
-    {"id": "ADD-005", "phrase": "would you mind also",    "category": "additive", "severity": "medium", "example": "Would you mind also adding the team page?"},
-    {"id": "ADD-006", "phrase": "and also",               "category": "additive", "severity": "low",    "example": "Approved on the homepage — and also can you tweak the footer?"},
-    {"id": "ADD-007", "phrase": "as well",                "category": "additive", "severity": "low",    "example": "Ship the landing page. The /pricing route as well, please."},
-    {"id": "ADD-008", "phrase": "on top of that",         "category": "additive", "severity": "medium", "example": "On top of that, the team wants a comparison table."},
-    {"id": "ADD-009", "phrase": "in addition",            "category": "additive", "severity": "medium", "example": "In addition to the dashboard, we'll need an admin panel."},
-    {"id": "ADD-010", "phrase": "also need",              "category": "additive", "severity": "medium", "example": "Looks good — we also need a CSV export."},
-    {"id": "ADD-011", "phrase": "one more thing",         "category": "additive", "severity": "medium", "example": "One more thing — can the modal also support keyboard nav?"},
-    {"id": "ADD-012", "phrase": "another thing",          "category": "additive", "severity": "medium", "example": "Another thing: the welcome email needs to be HTML, not plaintext."},
-    {"id": "ADD-013", "phrase": "a couple more",          "category": "additive", "severity": "medium", "example": "Just a couple more states for the empty page."},
-    {"id": "ADD-014", "phrase": "while we're at it",      "category": "additive", "severity": "high",   "example": "While we're at it, can we refactor the auth flow?"},
-    {"id": "ADD-015", "phrase": "while you're at it",     "category": "additive", "severity": "high",   "example": "While you're at it, fix the SEO meta tags."},
-    {"id": "ADD-016", "phrase": "as long as you're in there", "category": "additive", "severity": "high", "example": "As long as you're in there, can you also clean up the unused variables?"},
-    {"id": "ADD-017", "phrase": "as long as you're there","category": "additive", "severity": "high",   "example": "As long as you're there, can you update the README?"},
-    {"id": "ADD-018", "phrase": "since you're already",   "category": "additive", "severity": "high",   "example": "Since you're already touching that file, fix the typo on line 30."},
-    {"id": "ADD-019", "phrase": "since we're here",       "category": "additive", "severity": "high",   "example": "Since we're here on this thread, can you also estimate v2?"},
-    {"id": "ADD-020", "phrase": "plus also",              "category": "additive", "severity": "medium", "example": "We need the redesign — plus also a quick favicon update."},
-    {"id": "ADD-021", "phrase": "while you're refactoring","category": "additive", "severity": "high",   "example": "While you're refactoring the API, can you also add rate limiting?"},
-    {"id": "ADD-022", "phrase": "while you're touching",  "category": "additive", "severity": "high",   "example": "While you're touching the deploy pipeline, switch us off Heroku too."},
-    {"id": "ADD-023", "phrase": "may as well",            "category": "additive", "severity": "medium", "example": "You may as well add unit tests while you're there."},
-    {"id": "ADD-024", "phrase": "and a tweet",            "category": "additive", "severity": "medium", "example": "Ship the landing page — and a tweet thread about it."},
-    {"id": "ADD-025", "phrase": "and a blog post",        "category": "additive", "severity": "medium", "example": "Launch the feature — and a blog post explaining it."},
-
-    {"id": "TRV-001", "phrase": "just a quick",           "category": "trivialize", "severity": "high", "example": "Just a quick change — can the logo be bigger?"},
-    {"id": "TRV-002", "phrase": "just quickly",           "category": "trivialize", "severity": "high", "example": "Can you just quickly swap the colors on the chart?"},
-    {"id": "TRV-003", "phrase": "quick change",           "category": "trivialize", "severity": "medium","example": "A quick change to the nav — move the logo to center."},
-    {"id": "TRV-004", "phrase": "quick fix",              "category": "trivialize", "severity": "medium","example": "Quick fix needed: the form submit isn't working on mobile."},
-    {"id": "TRV-005", "phrase": "quick tweak",            "category": "trivialize", "severity": "medium","example": "Quick tweak: can the header be sticky?"},
-    {"id": "TRV-006", "phrase": "quick update",           "category": "trivialize", "severity": "medium","example": "Quick update — the brand color is now #4f46e5."},
-    {"id": "TRV-007", "phrase": "small change",           "category": "trivialize", "severity": "medium","example": "A small change to the pricing page — show annual savings."},
-    {"id": "TRV-008", "phrase": "small tweak",            "category": "trivialize", "severity": "medium","example": "Small tweak: change the CTA copy to 'Get started'."},
-    {"id": "TRV-009", "phrase": "small update",           "category": "trivialize", "severity": "low",   "example": "Small update: refresh the testimonials section."},
-    {"id": "TRV-010", "phrase": "tiny tweak",             "category": "trivialize", "severity": "high",  "example": "Tiny tweak: can the entire onboarding be 2 steps instead of 4?"},
-    {"id": "TRV-011", "phrase": "minor adjustment",       "category": "trivialize", "severity": "medium","example": "Minor adjustment — the spacing on the cards is off."},
-    {"id": "TRV-012", "phrase": "minor change",           "category": "trivialize", "severity": "medium","example": "Minor change: rename the 'Beta' badge to 'New'."},
-    {"id": "TRV-013", "phrase": "shouldn't take long",    "category": "trivialize", "severity": "high",  "example": "Shouldn't take long — just add a profile photo upload."},
-    {"id": "TRV-014", "phrase": "five minutes",           "category": "trivialize", "severity": "high",  "example": "Five-minute thing: can you wire up Stripe webhooks?"},
-    {"id": "TRV-015", "phrase": "5 minutes",              "category": "trivialize", "severity": "high",  "example": "5 minutes max — just need a quick way to export."},
-    {"id": "TRV-016", "phrase": "two seconds",            "category": "trivialize", "severity": "high",  "example": "Two seconds — can you make the modal draggable?"},
-    {"id": "TRV-017", "phrase": "easy enough",            "category": "trivialize", "severity": "medium","example": "Easy enough to add a 'remember me' checkbox?"},
-    {"id": "TRV-018", "phrase": "small refactor",         "category": "trivialize", "severity": "high",  "example": "A small refactor — switch the whole state layer to Redux."},
-    {"id": "TRV-019", "phrase": "quick refactor",         "category": "trivialize", "severity": "high",  "example": "Quick refactor to break the monolithic component into pieces."},
-
-    {"id": "VAG-001", "phrase": "i was thinking",         "category": "vague_future", "severity": "medium", "example": "I was thinking the search should also filter by date."},
-    {"id": "VAG-002", "phrase": "i was wondering",        "category": "vague_future", "severity": "medium", "example": "I was wondering if we could add comments to each row."},
-    {"id": "VAG-003", "phrase": "have you thought about", "category": "vague_future", "severity": "medium", "example": "Have you thought about how this would work in dark mode?"},
-    {"id": "VAG-004", "phrase": "would it be possible to","category": "vague_future", "severity": "medium", "example": "Would it be possible to add a usage analytics page?"},
-    {"id": "VAG-005", "phrase": "could we maybe",         "category": "vague_future", "severity": "medium", "example": "Could we maybe add a download-as-PDF option?"},
-    {"id": "VAG-006", "phrase": "could you maybe",        "category": "vague_future", "severity": "medium", "example": "Could you maybe make the empty states more interesting?"},
-    {"id": "VAG-007", "phrase": "is there a way to",      "category": "vague_future", "severity": "medium", "example": "Is there a way to make the chart interactive?"},
-    {"id": "VAG-008", "phrase": "is it possible to",      "category": "vague_future", "severity": "medium", "example": "Is it possible to add Google sign-in alongside email?"},
-    {"id": "VAG-009", "phrase": "what if we",             "category": "vague_future", "severity": "medium", "example": "What if we added a Discord integration?"},
-    {"id": "VAG-010", "phrase": "have you considered",    "category": "vague_future", "severity": "medium", "example": "Have you considered breaking the dashboard into tabs?"},
-    {"id": "VAG-011", "phrase": "thinking about",         "category": "vague_future", "severity": "low",    "example": "Thinking about a referral program — what would that take?"},
-    {"id": "VAG-012", "phrase": "maybe we should",        "category": "vague_future", "severity": "medium", "example": "Maybe we should also support iPad — what do you think?"},
-    {"id": "VAG-013", "phrase": "could we possibly",      "category": "vague_future", "severity": "medium", "example": "Could we possibly fit in a quick announcement banner?"},
-    {"id": "VAG-014", "phrase": "would love to see",      "category": "vague_future", "severity": "medium", "example": "Would love to see the empty state get a bit more personality."},
-    {"id": "VAG-015", "phrase": "doesn't sound right",    "category": "vague_future", "severity": "medium", "example": "The headline doesn't sound right — can you try a few alternatives?"},
-
-    {"id": "SHF-001", "phrase": "let's pivot to",         "category": "scope_shift", "severity": "high", "example": "Let's pivot to a completely new homepage design."},
-    {"id": "SHF-002", "phrase": "instead let's",          "category": "scope_shift", "severity": "high", "example": "Instead let's start over with a different stack."},
-    {"id": "SHF-003", "phrase": "change of plans",        "category": "scope_shift", "severity": "high", "example": "Change of plans — we're going with a mobile-first approach."},
-    {"id": "SHF-004", "phrase": "new direction",          "category": "scope_shift", "severity": "high", "example": "New direction: ditch the wizard, go single-page."},
-    {"id": "SHF-005", "phrase": "rethinking this",        "category": "scope_shift", "severity": "high", "example": "Rethinking this — what if the dashboard was a chatbot?"},
-    {"id": "SHF-006", "phrase": "scrap that",             "category": "scope_shift", "severity": "high", "example": "Scrap that — let's go with a sidebar instead of tabs."},
-    {"id": "SHF-007", "phrase": "forget that",            "category": "scope_shift", "severity": "high", "example": "Forget that, marketing wants the funnel completely redesigned."},
-    {"id": "SHF-008", "phrase": "changed our mind",       "category": "scope_shift", "severity": "high", "example": "We changed our mind on the brand colors — restart from scratch."},
-    {"id": "SHF-009", "phrase": "new approach",           "category": "scope_shift", "severity": "medium","example": "New approach: instead of a form, make it a guided chat."},
-    {"id": "SHF-010", "phrase": "let's go with",          "category": "scope_shift", "severity": "low",   "example": "Let's go with the second concept — and add the features from concept three."},
-    {"id": "SHF-011", "phrase": "different angle",        "category": "scope_shift", "severity": "high",  "example": "Let's try a different angle on the copy — more provocative."},
-
-    {"id": "URG-001", "phrase": "asap",                   "category": "urgency", "severity": "low",    "example": "Need the new logo ASAP."},
-    {"id": "URG-002", "phrase": "by tomorrow",            "category": "urgency", "severity": "medium", "example": "Can we have the deck refresh by tomorrow?"},
-    {"id": "URG-003", "phrase": "by end of day",          "category": "urgency", "severity": "medium", "example": "Need this fix by end of day, please."},
-    {"id": "URG-004", "phrase": "by eod",                 "category": "urgency", "severity": "medium", "example": "By EOD: deploy the new landing copy."},
-    {"id": "URG-005", "phrase": "by end of week",         "category": "urgency", "severity": "low",    "example": "Wrap up the dashboard by end of week."},
-    {"id": "URG-006", "phrase": "end of day",             "category": "urgency", "severity": "low",    "example": "Hoping for an end-of-day turnaround on the prototype."},
-    {"id": "URG-007", "phrase": "urgent",                 "category": "urgency", "severity": "low",    "example": "Urgent: the prod build is broken."},
-    {"id": "URG-008", "phrase": "urgently",               "category": "urgency", "severity": "low",    "example": "Urgently need a hotfix for the checkout page."},
-    {"id": "URG-009", "phrase": "as soon as possible",    "category": "urgency", "severity": "low",    "example": "As soon as possible, swap the hero image."},
-    {"id": "URG-010", "phrase": "right away",             "category": "urgency", "severity": "low",    "example": "Need to ship this right away — investors are visiting."},
-    {"id": "URG-011", "phrase": "before friday",          "category": "urgency", "severity": "medium", "example": "Has to be live before Friday."},
-    {"id": "URG-012", "phrase": "before monday",          "category": "urgency", "severity": "medium", "example": "Need this in users' hands before Monday."},
-    {"id": "URG-013", "phrase": "before the weekend",     "category": "urgency", "severity": "medium", "example": "Push the redesign before the weekend, ideally."},
-    {"id": "URG-014", "phrase": "by close of business",   "category": "urgency", "severity": "medium", "example": "By close of business: send over the revised flow."},
-    {"id": "URG-015", "phrase": "by cob",                 "category": "urgency", "severity": "medium", "example": "By COB please — we're presenting tomorrow."},
-
-    {"id": "LEV-001", "phrase": "since you already",      "category": "relationship_leverage", "severity": "high", "example": "Since you already built the auth, can you also add SSO?"},
-    {"id": "LEV-002", "phrase": "since you know",         "category": "relationship_leverage", "severity": "high", "example": "Since you know how the API is structured, can you add the rate-limit logic?"},
-    {"id": "LEV-003", "phrase": "since you understand",   "category": "relationship_leverage", "severity": "high", "example": "Since you understand the data model, mind adding a migration script?"},
-    {"id": "LEV-004", "phrase": "since you've been",      "category": "relationship_leverage", "severity": "high", "example": "Since you've been the closest to the codebase, could you onboard the new engineer?"},
-    {"id": "LEV-005", "phrase": "you know our system",    "category": "relationship_leverage", "severity": "high", "example": "You know our system best — can you also do the spec for v2?"},
-    {"id": "LEV-006", "phrase": "you've already",         "category": "relationship_leverage", "severity": "high", "example": "You've already done the hard part — the rest should be quick."},
-    {"id": "LEV-007", "phrase": "you're already in there","category": "relationship_leverage", "severity": "high", "example": "You're already in there — please rename the variables while you're at it."},
-    {"id": "LEV-008", "phrase": "you're already familiar","category": "relationship_leverage", "severity": "high", "example": "You're already familiar with the deploy pipeline — handle this one too?"},
-    {"id": "LEV-009", "phrase": "you're already up to speed","category": "relationship_leverage", "severity": "high", "example": "You're already up to speed on the brand — design the new pitch deck?"},
-    {"id": "LEV-010", "phrase": "you know the code",      "category": "relationship_leverage", "severity": "high", "example": "You know the code best — could you also write the docs?"},
-
-    {"id": "CMP-001", "phrase": "the old designer",       "category": "comparison_shame", "severity": "medium", "example": "The old designer used to turn this around in a day."},
-    {"id": "CMP-002", "phrase": "the previous developer", "category": "comparison_shame", "severity": "medium", "example": "The previous developer used to include unit tests."},
-    {"id": "CMP-003", "phrase": "our last contractor",    "category": "comparison_shame", "severity": "medium", "example": "Our last contractor would have built this in a weekend."},
-    {"id": "CMP-004", "phrase": "the agency we used",     "category": "comparison_shame", "severity": "medium", "example": "The agency we used for v1 included QA in the price."},
-    {"id": "CMP-005", "phrase": "competitor does this",   "category": "comparison_shame", "severity": "medium", "example": "Our competitor does this with one click — can we?"},
-    {"id": "CMP-006", "phrase": "the other guy",          "category": "comparison_shame", "severity": "medium", "example": "The other guy we talked to said he could do it for half."},
-    {"id": "CMP-007", "phrase": "another freelancer",     "category": "comparison_shame", "severity": "medium", "example": "Another freelancer offered to throw in social cards for free."},
-    {"id": "CMP-008", "phrase": "saw on another site",    "category": "comparison_shame", "severity": "low",    "example": "Saw on another site how they handle the modal — can we copy that?"},
-    {"id": "CMP-009", "phrase": "not as good as",         "category": "comparison_shame", "severity": "medium", "example": "It's just not as good as what we had before."},
-    {"id": "CMP-010", "phrase": "i've seen people",       "category": "comparison_shame", "severity": "medium", "example": "I've seen people do this kind of thing in a day."},
-
-    {"id": "SPC-001", "phrase": "make it more",           "category": "specification_creep", "severity": "medium", "example": "Make it more polished — feels slightly cheap right now."},
-    {"id": "SPC-002", "phrase": "but with",               "category": "specification_creep", "severity": "low",    "example": "Approved, but with the original blue (not the new one)."},
-    {"id": "SPC-003", "phrase": "but also",               "category": "specification_creep", "severity": "low",    "example": "Looks great but also can we get a hover state?"},
-    {"id": "SPC-004", "phrase": "but make it",            "category": "specification_creep", "severity": "medium", "example": "But make it pop more."},
-    {"id": "SPC-005", "phrase": "polish",                 "category": "specification_creep", "severity": "low",    "example": "Just need a final polish pass."},
-    {"id": "SPC-006", "phrase": "a bit more",             "category": "specification_creep", "severity": "low",    "example": "A bit more contrast on the buttons, please."},
-    {"id": "SPC-007", "phrase": "a little more",          "category": "specification_creep", "severity": "low",    "example": "A little more breathing room around the headline."},
-    {"id": "SPC-008", "phrase": "slightly more",          "category": "specification_creep", "severity": "low",    "example": "Slightly more rounded corners on the cards."},
-    {"id": "SPC-009", "phrase": "the look",               "category": "specification_creep", "severity": "low",    "example": "Can you take another pass at the look?"},
-    {"id": "SPC-010", "phrase": "the feel",               "category": "specification_creep", "severity": "low",    "example": "It needs to have more of a premium feel."},
-    {"id": "SPC-011", "phrase": "more like",              "category": "specification_creep", "severity": "medium", "example": "Can we make it more like Linear's homepage?"},
-    {"id": "SPC-012", "phrase": "closer to",              "category": "specification_creep", "severity": "medium", "example": "Get the layout closer to what Stripe is doing."},
-    {"id": "SPC-013", "phrase": "feels off",              "category": "specification_creep", "severity": "medium", "example": "Something about the spacing feels off — can you take another look?"},
-    {"id": "SPC-014", "phrase": "the gradient",           "category": "specification_creep", "severity": "medium", "example": "Can the gradient be softer? Currently it feels jarring."},
-    {"id": "SPC-015", "phrase": "the shadow",             "category": "specification_creep", "severity": "medium", "example": "The shadow needs to be more subtle on the cards."},
-    {"id": "SPC-016", "phrase": "the contrast",           "category": "specification_creep", "severity": "medium", "example": "Bump the contrast on the buttons — they're hard to find."},
-    {"id": "SPC-017", "phrase": "the alignment",          "category": "specification_creep", "severity": "low",    "example": "The alignment in the footer is slightly off."},
-    {"id": "SPC-018", "phrase": "the typography",         "category": "specification_creep", "severity": "medium", "example": "The typography could feel more premium — try a serif?"},
-    {"id": "SPC-019", "phrase": "feels too",              "category": "specification_creep", "severity": "medium", "example": "Feels too cluttered up top. Strip something out."},
-    {"id": "SPC-020", "phrase": "breathing room",         "category": "specification_creep", "severity": "low",    "example": "Needs more breathing room around the headline."},
-    {"id": "SPC-021", "phrase": "more whitespace",        "category": "specification_creep", "severity": "low",    "example": "More whitespace between sections, please."},
-    {"id": "SPC-022", "phrase": "less whitespace",        "category": "specification_creep", "severity": "low",    "example": "Less whitespace — feels too sparse right now."},
-    {"id": "SPC-023", "phrase": "more minimal",           "category": "specification_creep", "severity": "medium", "example": "Make it more minimal — there's too much going on."},
-    {"id": "SPC-024", "phrase": "more elegant",           "category": "specification_creep", "severity": "medium", "example": "Can the modal feel more elegant? Try thinner lines."},
-    {"id": "SPC-025", "phrase": "more modern",            "category": "specification_creep", "severity": "medium", "example": "The hero feels dated — make it more modern."},
-    {"id": "SPC-026", "phrase": "more on-brand",          "category": "specification_creep", "severity": "medium", "example": "The CTA color isn't quite right — needs to feel more on-brand."},
-    {"id": "SPC-027", "phrase": "tighter",                "category": "specification_creep", "severity": "low",    "example": "Tighter line-height on the body copy."},
-    {"id": "SPC-028", "phrase": "softer",                 "category": "specification_creep", "severity": "low",    "example": "Softer rounded corners across all cards."},
-    {"id": "SPC-029", "phrase": "bolder",                 "category": "specification_creep", "severity": "low",    "example": "Bolder weight on the headline — current looks weak."},
-    {"id": "SPC-030", "phrase": "make it punchier",       "category": "specification_creep", "severity": "medium", "example": "Make the headline copy punchier — cut every other word."},
-    {"id": "SPC-031", "phrase": "more conversational",    "category": "specification_creep", "severity": "medium", "example": "Body copy could be more conversational — less marketing."},
-    {"id": "SPC-032", "phrase": "more professional",      "category": "specification_creep", "severity": "medium", "example": "Make it sound more professional — less playful."},
-    {"id": "SPC-033", "phrase": "less corporate",         "category": "specification_creep", "severity": "medium", "example": "Less corporate. Sound like a human."},
-    {"id": "SPC-034", "phrase": "the voice",              "category": "specification_creep", "severity": "medium", "example": "The voice needs to be more confident throughout."},
-    {"id": "SPC-035", "phrase": "rewrite the headline",   "category": "specification_creep", "severity": "high",   "example": "Rewrite the headline — and the subhead — and the CTA."},
-
-    {"id": "REV-001", "phrase": "one more round",         "category": "revision_cycle", "severity": "high", "example": "Let's do one more round on the homepage."},
-    {"id": "REV-002", "phrase": "one more revision",      "category": "revision_cycle", "severity": "high", "example": "One more revision on the email templates and we're done."},
-    {"id": "REV-003", "phrase": "one more pass",          "category": "revision_cycle", "severity": "high", "example": "One more pass on the brand colors should do it."},
-    {"id": "REV-004", "phrase": "one more iteration",     "category": "revision_cycle", "severity": "high", "example": "One more iteration on the dashboard layout."},
-    {"id": "REV-005", "phrase": "another round",          "category": "revision_cycle", "severity": "high", "example": "Need to do another round of revisions with the stakeholders."},
-    {"id": "REV-006", "phrase": "another revision",       "category": "revision_cycle", "severity": "high", "example": "Going to need another revision — leadership has notes."},
-    {"id": "REV-007", "phrase": "final revision",         "category": "revision_cycle", "severity": "medium","example": "Final revision, I promise — change the headline."},
-    {"id": "REV-008", "phrase": "final pass",             "category": "revision_cycle", "severity": "medium","example": "Final pass: adjust the line-height on body copy."},
-    {"id": "REV-009", "phrase": "last revision",          "category": "revision_cycle", "severity": "medium","example": "Last revision — bump the H1 size."},
-    {"id": "REV-010", "phrase": "last round",             "category": "revision_cycle", "severity": "medium","example": "Last round of changes before launch."},
-    {"id": "REV-011", "phrase": "last tweak",             "category": "revision_cycle", "severity": "medium","example": "Last tweak — center-align the headline."},
-    {"id": "REV-012", "phrase": "final tweak",            "category": "revision_cycle", "severity": "medium","example": "Final tweak: shrink the logo by 10%."},
-    {"id": "REV-013", "phrase": "tiny revision",          "category": "revision_cycle", "severity": "high", "example": "Tiny revision: redo the entire CTA section."},
-
-    {"id": "DEF-001", "phrase": "we forgot to mention",   "category": "deferred_spec", "severity": "high", "example": "Oh, we forgot to mention — it also needs to work in Safari."},
-    {"id": "DEF-002", "phrase": "forgot to mention",      "category": "deferred_spec", "severity": "high", "example": "I forgot to mention the dashboard needs role-based access."},
-    {"id": "DEF-003", "phrase": "actually we also",       "category": "deferred_spec", "severity": "high", "example": "Actually we also need a CSV import flow."},
-    {"id": "DEF-004", "phrase": "actually we need",       "category": "deferred_spec", "severity": "high", "example": "Actually we need a way to schedule recurring exports."},
-    {"id": "DEF-005", "phrase": "btw can it",             "category": "deferred_spec", "severity": "medium","example": "BTW can it also support 2FA?"},
-    {"id": "DEF-006", "phrase": "by the way",             "category": "deferred_spec", "severity": "low",   "example": "By the way, the team wants webhook support too."},
-    {"id": "DEF-007", "phrase": "oh and",                 "category": "deferred_spec", "severity": "medium","example": "Oh and the brand wants a new favicon as well."},
-    {"id": "DEF-008", "phrase": "one thing i forgot",     "category": "deferred_spec", "severity": "high", "example": "One thing I forgot — the form needs file uploads."},
-    {"id": "DEF-009", "phrase": "meant to mention",       "category": "deferred_spec", "severity": "high", "example": "Meant to mention this earlier — we need a French version of the site."},
-    {"id": "DEF-010", "phrase": "almost forgot",          "category": "deferred_spec", "severity": "high", "example": "Almost forgot — the modal needs to support Tab navigation."},
-
-    {"id": "TEC-001", "phrase": "make it work on",        "category": "technical_creep", "severity": "high", "example": "Make it work on IE11 too — legal needs it."},
-    {"id": "TEC-002", "phrase": "compatible with",        "category": "technical_creep", "severity": "high", "example": "Should be compatible with our Salesforce instance."},
-    {"id": "TEC-003", "phrase": "should also support",    "category": "technical_creep", "severity": "high", "example": "It should also support Single Sign-On."},
-    {"id": "TEC-004", "phrase": "needs to work with",     "category": "technical_creep", "severity": "high", "example": "Needs to work with our existing webhook infra."},
-    {"id": "TEC-005", "phrase": "needs to integrate with","category": "technical_creep", "severity": "high", "example": "Needs to integrate with our HubSpot CRM."},
-    {"id": "TEC-006", "phrase": "responsive on",          "category": "technical_creep", "severity": "medium","example": "Make sure it's responsive on iPad mini too."},
-    {"id": "TEC-007", "phrase": "works on mobile",        "category": "technical_creep", "severity": "low",   "example": "Confirm this works on mobile before merging."},
-    {"id": "TEC-008", "phrase": "works on tablet",        "category": "technical_creep", "severity": "medium","example": "Also make sure it works on tablet — sales uses iPads."},
-    {"id": "TEC-009", "phrase": "works on ipad",          "category": "technical_creep", "severity": "medium","example": "It should work on iPad in landscape mode."},
-    {"id": "TEC-010", "phrase": "should be accessible",   "category": "technical_creep", "severity": "medium","example": "Should be accessible — WCAG AA at minimum."},
-    {"id": "TEC-011", "phrase": "accessibility",          "category": "technical_creep", "severity": "low",   "example": "Add full accessibility — screen reader support, keyboard nav, the works."},
-    {"id": "TEC-012", "phrase": "support dark mode",      "category": "technical_creep", "severity": "medium","example": "Also needs to support dark mode."},
-    {"id": "TEC-013", "phrase": "needs to be fast",       "category": "technical_creep", "severity": "medium","example": "Needs to be fast — sub-100ms response."},
-    {"id": "TEC-014", "phrase": "needs unit tests",       "category": "technical_creep", "severity": "high",  "example": "Before we ship: this needs unit tests."},
-    {"id": "TEC-015", "phrase": "needs e2e tests",        "category": "technical_creep", "severity": "high",  "example": "Add e2e tests for the checkout flow."},
-    {"id": "TEC-016", "phrase": "add typescript",         "category": "technical_creep", "severity": "high",  "example": "Add TypeScript to the whole codebase while you're in there."},
-    {"id": "TEC-017", "phrase": "migrate to",             "category": "technical_creep", "severity": "high",  "example": "Migrate to the new auth provider before next release."},
-
-    {"id": "ASM-001", "phrase": "i assume",               "category": "assumption", "severity": "medium", "example": "I assume the modal also has a close button on Escape."},
-    {"id": "ASM-002", "phrase": "i assumed",              "category": "assumption", "severity": "medium", "example": "I assumed analytics would be included by default."},
-    {"id": "ASM-003", "phrase": "of course it'll",        "category": "assumption", "severity": "high",   "example": "Of course it'll send a confirmation email, right?"},
-    {"id": "ASM-004", "phrase": "of course this includes","category": "assumption", "severity": "high",   "example": "Of course this includes the admin panel?"},
-    {"id": "ASM-005", "phrase": "naturally",              "category": "assumption", "severity": "medium", "example": "Naturally we'll also need a way to manage users."},
-    {"id": "ASM-006", "phrase": "obviously this",         "category": "assumption", "severity": "high",   "example": "Obviously this includes email templates for all states?"},
-    {"id": "ASM-007", "phrase": "this includes right",    "category": "assumption", "severity": "high",   "example": "This includes mobile responsiveness, right?"},
-    {"id": "ASM-008", "phrase": "this comes with",        "category": "assumption", "severity": "medium", "example": "I assume this comes with onboarding emails."},
-    {"id": "ASM-009", "phrase": "standard right",         "category": "assumption", "severity": "high",   "example": "Forgot password flow is standard, right?"},
-    {"id": "ASM-010", "phrase": "isn't this included",    "category": "assumption", "severity": "high",   "example": "Isn't this included in the original scope?"},
-    {"id": "ASM-011", "phrase": "i thought this would",   "category": "assumption", "severity": "high",   "example": "I thought this would also handle file uploads."},
-
-    {"id": "EMO-001", "phrase": "we really need",         "category": "emotional_coercion", "severity": "medium", "example": "We really need this fix before Friday."},
-    {"id": "EMO-002", "phrase": "we're counting on you",  "category": "emotional_coercion", "severity": "high",   "example": "We're counting on you to deliver this on time."},
-    {"id": "EMO-003", "phrase": "this is critical",       "category": "emotional_coercion", "severity": "medium", "example": "This is critical — the board demo depends on it."},
-    {"id": "EMO-004", "phrase": "the team really",        "category": "emotional_coercion", "severity": "medium", "example": "The team really wants this in v1."},
-    {"id": "EMO-005", "phrase": "desperately",            "category": "emotional_coercion", "severity": "medium", "example": "We desperately need the analytics page working."},
-    {"id": "EMO-006", "phrase": "please can you",         "category": "emotional_coercion", "severity": "low",    "example": "Please can you push this out tonight?"},
-    {"id": "EMO-007", "phrase": "we'd really appreciate", "category": "emotional_coercion", "severity": "medium", "example": "We'd really appreciate it if you could squeeze this in."},
-    {"id": "EMO-008", "phrase": "it would mean a lot",    "category": "emotional_coercion", "severity": "high",   "example": "It would mean a lot to the team if you could add this."},
-    {"id": "EMO-009", "phrase": "huge favor",             "category": "emotional_coercion", "severity": "high",   "example": "Huge favor — can you also style the receipt emails?"},
-    {"id": "EMO-010", "phrase": "do me a solid",          "category": "emotional_coercion", "severity": "high",   "example": "Do me a solid and add the export button before tomorrow's demo."},
-
-    {"id": "FAQ-001", "phrase": "could you take a look",  "category": "fake_question", "severity": "medium", "example": "Could you take a look at the contact form? It's not sending."},
-    {"id": "FAQ-002", "phrase": "would you mind",         "category": "fake_question", "severity": "medium", "example": "Would you mind adding a quick loading spinner?"},
-    {"id": "FAQ-003", "phrase": "if you have a sec",      "category": "fake_question", "severity": "medium", "example": "If you have a sec — the button alignment is off on mobile."},
-    {"id": "FAQ-004", "phrase": "when you get a chance",  "category": "fake_question", "severity": "low",    "example": "When you get a chance, can you re-export the assets?"},
-    {"id": "FAQ-005", "phrase": "whenever you have time", "category": "fake_question", "severity": "low",    "example": "Whenever you have time — the footer needs an update."},
-    {"id": "FAQ-006", "phrase": "no rush but",            "category": "fake_question", "severity": "medium", "example": "No rush but: can you add CSV export?"},
-    {"id": "FAQ-007", "phrase": "if you have a moment",   "category": "fake_question", "severity": "medium", "example": "If you have a moment, can you fix the typo on /about?"},
-    {"id": "FAQ-008", "phrase": "when you're free",       "category": "fake_question", "severity": "low",    "example": "When you're free, can you update the brand colors?"},
-    {"id": "FAQ-009", "phrase": "got a second",           "category": "fake_question", "severity": "medium", "example": "Got a second to fix the hero image positioning?"},
-    {"id": "FAQ-010", "phrase": "could you just",         "category": "fake_question", "severity": "high",   "example": "Could you just rebuild the auth screen real quick?"},
-    {"id": "FAQ-011", "phrase": "any chance you could",   "category": "fake_question", "severity": "medium", "example": "Any chance you could squeeze in the analytics tracking today?"},
-
-    {"id": "FAV-001", "phrase": "shouldn't take long",    "category": "favor_framing", "severity": "high", "example": "Shouldn't take long — just hook up the form to Mailchimp."},
-    {"id": "FAV-002", "phrase": "shouldn't be much",      "category": "favor_framing", "severity": "high", "example": "Shouldn't be much — add SSO with Google."},
-    {"id": "FAV-003", "phrase": "wouldn't take long",     "category": "favor_framing", "severity": "high", "example": "Wouldn't take long to add a 'remember me' option."},
-    {"id": "FAV-004", "phrase": "wouldn't take much",     "category": "favor_framing", "severity": "high", "example": "Wouldn't take much to add a referral link generator."},
-    {"id": "FAV-005", "phrase": "easy to add",            "category": "favor_framing", "severity": "high", "example": "Easy to add a download button somewhere on the page."},
-    {"id": "FAV-006", "phrase": "simple addition",        "category": "favor_framing", "severity": "high", "example": "Simple addition — let users sort by date."},
-    {"id": "FAV-007", "phrase": "not a big deal",         "category": "favor_framing", "severity": "high", "example": "Not a big deal — but can you also add Twitter login?"},
-    {"id": "FAV-008", "phrase": "doesn't sound hard",     "category": "favor_framing", "severity": "high", "example": "Doesn't sound hard to add a CSV upload."},
-    {"id": "FAV-009", "phrase": "looks simple",           "category": "favor_framing", "severity": "high", "example": "Looks simple enough — could you add multi-currency support?"},
-    {"id": "FAV-010", "phrase": "low effort",             "category": "favor_framing", "severity": "high", "example": "Low effort change: make the columns reorderable."},
-    {"id": "FAV-011", "phrase": "low lift",               "category": "favor_framing", "severity": "high", "example": "Low lift, I'd think — add a dark mode toggle."},
-    {"id": "FAV-012", "phrase": "shouldn't be hard",      "category": "favor_framing", "severity": "high", "example": "Shouldn't be hard to add bulk delete."},
-    {"id": "FAV-013", "phrase": "easy lift",              "category": "favor_framing", "severity": "high", "example": "Easy lift — wire up the Slack notifications."}
+    {
+      "id": "ADD-001",
+      "phrase": "can you also",
+      "category": "additive",
+      "severity": "medium",
+      "example": "Looks great! Can you also add a hover state to all the buttons?"
+    },
+    {
+      "id": "ADD-002",
+      "phrase": "can we also",
+      "category": "additive",
+      "severity": "medium",
+      "example": "Love it. Can we also throw in a quick onboarding video?"
+    },
+    {
+      "id": "ADD-003",
+      "phrase": "could you also",
+      "category": "additive",
+      "severity": "medium",
+      "example": "Could you also wire up the email notifications while you're at it?"
+    },
+    {
+      "id": "ADD-004",
+      "phrase": "could we also",
+      "category": "additive",
+      "severity": "medium",
+      "example": "Could we also have a dark mode version?"
+    },
+    {
+      "id": "ADD-005",
+      "phrase": "would you mind also",
+      "category": "additive",
+      "severity": "medium",
+      "example": "Would you mind also adding the team page?"
+    },
+    {
+      "id": "ADD-006",
+      "phrase": "and also",
+      "category": "additive",
+      "severity": "low",
+      "example": "Approved on the homepage \u2014 and also can you tweak the footer?"
+    },
+    {
+      "id": "ADD-007",
+      "phrase": "as well",
+      "category": "additive",
+      "severity": "low",
+      "example": "Ship the landing page. The /pricing route as well, please."
+    },
+    {
+      "id": "ADD-008",
+      "phrase": "on top of that",
+      "category": "additive",
+      "severity": "medium",
+      "example": "On top of that, the team wants a comparison table."
+    },
+    {
+      "id": "ADD-009",
+      "phrase": "in addition",
+      "category": "additive",
+      "severity": "medium",
+      "example": "In addition to the dashboard, we'll need an admin panel."
+    },
+    {
+      "id": "ADD-010",
+      "phrase": "also need",
+      "category": "additive",
+      "severity": "medium",
+      "example": "Looks good \u2014 we also need a CSV export."
+    },
+    {
+      "id": "ADD-011",
+      "phrase": "one more thing",
+      "category": "additive",
+      "severity": "medium",
+      "example": "One more thing \u2014 can the modal also support keyboard nav?"
+    },
+    {
+      "id": "ADD-012",
+      "phrase": "another thing",
+      "category": "additive",
+      "severity": "medium",
+      "example": "Another thing: the welcome email needs to be HTML, not plaintext."
+    },
+    {
+      "id": "ADD-013",
+      "phrase": "a couple more",
+      "category": "additive",
+      "severity": "medium",
+      "example": "Just a couple more states for the empty page."
+    },
+    {
+      "id": "ADD-014",
+      "phrase": "while we're at it",
+      "category": "additive",
+      "severity": "high",
+      "example": "While we're at it, can we refactor the auth flow?"
+    },
+    {
+      "id": "ADD-015",
+      "phrase": "while you're at it",
+      "category": "additive",
+      "severity": "high",
+      "example": "While you're at it, fix the SEO meta tags."
+    },
+    {
+      "id": "ADD-016",
+      "phrase": "as long as you're in there",
+      "category": "additive",
+      "severity": "high",
+      "example": "As long as you're in there, can you also clean up the unused variables?"
+    },
+    {
+      "id": "ADD-017",
+      "phrase": "as long as you're there",
+      "category": "additive",
+      "severity": "high",
+      "example": "As long as you're there, can you update the README?"
+    },
+    {
+      "id": "ADD-018",
+      "phrase": "since you're already",
+      "category": "additive",
+      "severity": "high",
+      "example": "Since you're already touching that file, fix the typo on line 30."
+    },
+    {
+      "id": "ADD-019",
+      "phrase": "since we're here",
+      "category": "additive",
+      "severity": "high",
+      "example": "Since we're here on this thread, can you also estimate v2?"
+    },
+    {
+      "id": "ADD-020",
+      "phrase": "plus also",
+      "category": "additive",
+      "severity": "medium",
+      "example": "We need the redesign \u2014 plus also a quick favicon update."
+    },
+    {
+      "id": "ADD-021",
+      "phrase": "while you're refactoring",
+      "category": "additive",
+      "severity": "high",
+      "example": "While you're refactoring the API, can you also add rate limiting?"
+    },
+    {
+      "id": "ADD-022",
+      "phrase": "while you're touching",
+      "category": "additive",
+      "severity": "high",
+      "example": "While you're touching the deploy pipeline, switch us off Heroku too."
+    },
+    {
+      "id": "ADD-023",
+      "phrase": "may as well",
+      "category": "additive",
+      "severity": "medium",
+      "example": "You may as well add unit tests while you're there."
+    },
+    {
+      "id": "ADD-024",
+      "phrase": "and a tweet",
+      "category": "additive",
+      "severity": "medium",
+      "example": "Ship the landing page \u2014 and a tweet thread about it."
+    },
+    {
+      "id": "ADD-025",
+      "phrase": "and a blog post",
+      "category": "additive",
+      "severity": "medium",
+      "example": "Launch the feature \u2014 and a blog post explaining it."
+    },
+    {
+      "id": "TRV-001",
+      "phrase": "just a quick",
+      "category": "trivialize",
+      "severity": "high",
+      "example": "Just a quick change \u2014 can the logo be bigger?"
+    },
+    {
+      "id": "TRV-002",
+      "phrase": "just quickly",
+      "category": "trivialize",
+      "severity": "high",
+      "example": "Can you just quickly swap the colors on the chart?"
+    },
+    {
+      "id": "TRV-003",
+      "phrase": "quick change",
+      "category": "trivialize",
+      "severity": "medium",
+      "example": "A quick change to the nav \u2014 move the logo to center."
+    },
+    {
+      "id": "TRV-004",
+      "phrase": "quick fix",
+      "category": "trivialize",
+      "severity": "medium",
+      "example": "Quick fix needed: the form submit isn't working on mobile."
+    },
+    {
+      "id": "TRV-005",
+      "phrase": "quick tweak",
+      "category": "trivialize",
+      "severity": "medium",
+      "example": "Quick tweak: can the header be sticky?"
+    },
+    {
+      "id": "TRV-006",
+      "phrase": "quick update",
+      "category": "trivialize",
+      "severity": "medium",
+      "example": "Quick update \u2014 the brand color is now #4f46e5."
+    },
+    {
+      "id": "TRV-007",
+      "phrase": "small change",
+      "category": "trivialize",
+      "severity": "medium",
+      "example": "A small change to the pricing page \u2014 show annual savings."
+    },
+    {
+      "id": "TRV-008",
+      "phrase": "small tweak",
+      "category": "trivialize",
+      "severity": "medium",
+      "example": "Small tweak: change the CTA copy to 'Get started'."
+    },
+    {
+      "id": "TRV-009",
+      "phrase": "small update",
+      "category": "trivialize",
+      "severity": "low",
+      "example": "Small update: refresh the testimonials section."
+    },
+    {
+      "id": "TRV-010",
+      "phrase": "tiny tweak",
+      "category": "trivialize",
+      "severity": "high",
+      "example": "Tiny tweak: can the entire onboarding be 2 steps instead of 4?"
+    },
+    {
+      "id": "TRV-011",
+      "phrase": "minor adjustment",
+      "category": "trivialize",
+      "severity": "medium",
+      "example": "Minor adjustment \u2014 the spacing on the cards is off."
+    },
+    {
+      "id": "TRV-012",
+      "phrase": "minor change",
+      "category": "trivialize",
+      "severity": "medium",
+      "example": "Minor change: rename the 'Beta' badge to 'New'."
+    },
+    {
+      "id": "TRV-013",
+      "phrase": "shouldn't take long",
+      "category": "trivialize",
+      "severity": "high",
+      "example": "Shouldn't take long \u2014 just add a profile photo upload."
+    },
+    {
+      "id": "TRV-014",
+      "phrase": "five minutes",
+      "category": "trivialize",
+      "severity": "high",
+      "example": "Five-minute thing: can you wire up Stripe webhooks?"
+    },
+    {
+      "id": "TRV-015",
+      "phrase": "5 minutes",
+      "category": "trivialize",
+      "severity": "high",
+      "example": "5 minutes max \u2014 just need a quick way to export."
+    },
+    {
+      "id": "TRV-016",
+      "phrase": "two seconds",
+      "category": "trivialize",
+      "severity": "high",
+      "example": "Two seconds \u2014 can you make the modal draggable?"
+    },
+    {
+      "id": "TRV-017",
+      "phrase": "easy enough",
+      "category": "trivialize",
+      "severity": "medium",
+      "example": "Easy enough to add a 'remember me' checkbox?"
+    },
+    {
+      "id": "TRV-018",
+      "phrase": "small refactor",
+      "category": "trivialize",
+      "severity": "high",
+      "example": "A small refactor \u2014 switch the whole state layer to Redux."
+    },
+    {
+      "id": "TRV-019",
+      "phrase": "quick refactor",
+      "category": "trivialize",
+      "severity": "high",
+      "example": "Quick refactor to break the monolithic component into pieces."
+    },
+    {
+      "id": "VAG-001",
+      "phrase": "i was thinking",
+      "category": "vague_future",
+      "severity": "medium",
+      "example": "I was thinking the search should also filter by date."
+    },
+    {
+      "id": "VAG-002",
+      "phrase": "i was wondering",
+      "category": "vague_future",
+      "severity": "medium",
+      "example": "I was wondering if we could add comments to each row."
+    },
+    {
+      "id": "VAG-003",
+      "phrase": "have you thought about",
+      "category": "vague_future",
+      "severity": "medium",
+      "example": "Have you thought about how this would work in dark mode?"
+    },
+    {
+      "id": "VAG-004",
+      "phrase": "would it be possible to",
+      "category": "vague_future",
+      "severity": "medium",
+      "example": "Would it be possible to add a usage analytics page?"
+    },
+    {
+      "id": "VAG-005",
+      "phrase": "could we maybe",
+      "category": "vague_future",
+      "severity": "medium",
+      "example": "Could we maybe add a download-as-PDF option?"
+    },
+    {
+      "id": "VAG-006",
+      "phrase": "could you maybe",
+      "category": "vague_future",
+      "severity": "medium",
+      "example": "Could you maybe make the empty states more interesting?"
+    },
+    {
+      "id": "VAG-007",
+      "phrase": "is there a way to",
+      "category": "vague_future",
+      "severity": "medium",
+      "example": "Is there a way to make the chart interactive?"
+    },
+    {
+      "id": "VAG-008",
+      "phrase": "is it possible to",
+      "category": "vague_future",
+      "severity": "medium",
+      "example": "Is it possible to add Google sign-in alongside email?"
+    },
+    {
+      "id": "VAG-009",
+      "phrase": "what if we",
+      "category": "vague_future",
+      "severity": "medium",
+      "example": "What if we added a Discord integration?"
+    },
+    {
+      "id": "VAG-010",
+      "phrase": "have you considered",
+      "category": "vague_future",
+      "severity": "medium",
+      "example": "Have you considered breaking the dashboard into tabs?"
+    },
+    {
+      "id": "VAG-011",
+      "phrase": "thinking about",
+      "category": "vague_future",
+      "severity": "low",
+      "example": "Thinking about a referral program \u2014 what would that take?"
+    },
+    {
+      "id": "VAG-012",
+      "phrase": "maybe we should",
+      "category": "vague_future",
+      "severity": "medium",
+      "example": "Maybe we should also support iPad \u2014 what do you think?"
+    },
+    {
+      "id": "VAG-013",
+      "phrase": "could we possibly",
+      "category": "vague_future",
+      "severity": "medium",
+      "example": "Could we possibly fit in a quick announcement banner?"
+    },
+    {
+      "id": "VAG-014",
+      "phrase": "would love to see",
+      "category": "vague_future",
+      "severity": "medium",
+      "example": "Would love to see the empty state get a bit more personality."
+    },
+    {
+      "id": "VAG-015",
+      "phrase": "doesn't sound right",
+      "category": "vague_future",
+      "severity": "medium",
+      "example": "The headline doesn't sound right \u2014 can you try a few alternatives?"
+    },
+    {
+      "id": "SHF-001",
+      "phrase": "let's pivot to",
+      "category": "scope_shift",
+      "severity": "high",
+      "example": "Let's pivot to a completely new homepage design."
+    },
+    {
+      "id": "SHF-002",
+      "phrase": "instead let's",
+      "category": "scope_shift",
+      "severity": "high",
+      "example": "Instead let's start over with a different stack."
+    },
+    {
+      "id": "SHF-003",
+      "phrase": "change of plans",
+      "category": "scope_shift",
+      "severity": "high",
+      "example": "Change of plans \u2014 we're going with a mobile-first approach."
+    },
+    {
+      "id": "SHF-004",
+      "phrase": "new direction",
+      "category": "scope_shift",
+      "severity": "high",
+      "example": "New direction: ditch the wizard, go single-page."
+    },
+    {
+      "id": "SHF-005",
+      "phrase": "rethinking this",
+      "category": "scope_shift",
+      "severity": "high",
+      "example": "Rethinking this \u2014 what if the dashboard was a chatbot?"
+    },
+    {
+      "id": "SHF-006",
+      "phrase": "scrap that",
+      "category": "scope_shift",
+      "severity": "high",
+      "example": "Scrap that \u2014 let's go with a sidebar instead of tabs."
+    },
+    {
+      "id": "SHF-007",
+      "phrase": "forget that",
+      "category": "scope_shift",
+      "severity": "high",
+      "example": "Forget that, marketing wants the funnel completely redesigned."
+    },
+    {
+      "id": "SHF-008",
+      "phrase": "changed our mind",
+      "category": "scope_shift",
+      "severity": "high",
+      "example": "We changed our mind on the brand colors \u2014 restart from scratch."
+    },
+    {
+      "id": "SHF-009",
+      "phrase": "new approach",
+      "category": "scope_shift",
+      "severity": "medium",
+      "example": "New approach: instead of a form, make it a guided chat."
+    },
+    {
+      "id": "SHF-010",
+      "phrase": "let's go with",
+      "category": "scope_shift",
+      "severity": "low",
+      "example": "Let's go with the second concept \u2014 and add the features from concept three."
+    },
+    {
+      "id": "SHF-011",
+      "phrase": "different angle",
+      "category": "scope_shift",
+      "severity": "high",
+      "example": "Let's try a different angle on the copy \u2014 more provocative."
+    },
+    {
+      "id": "URG-001",
+      "phrase": "asap",
+      "category": "urgency",
+      "severity": "low",
+      "example": "Need the new logo ASAP."
+    },
+    {
+      "id": "URG-002",
+      "phrase": "by tomorrow",
+      "category": "urgency",
+      "severity": "medium",
+      "example": "Can we have the deck refresh by tomorrow?"
+    },
+    {
+      "id": "URG-003",
+      "phrase": "by end of day",
+      "category": "urgency",
+      "severity": "medium",
+      "example": "Need this fix by end of day, please."
+    },
+    {
+      "id": "URG-004",
+      "phrase": "by eod",
+      "category": "urgency",
+      "severity": "medium",
+      "example": "By EOD: deploy the new landing copy."
+    },
+    {
+      "id": "URG-005",
+      "phrase": "by end of week",
+      "category": "urgency",
+      "severity": "low",
+      "example": "Wrap up the dashboard by end of week."
+    },
+    {
+      "id": "URG-006",
+      "phrase": "end of day",
+      "category": "urgency",
+      "severity": "low",
+      "example": "Hoping for an end-of-day turnaround on the prototype."
+    },
+    {
+      "id": "URG-007",
+      "phrase": "urgent",
+      "category": "urgency",
+      "severity": "low",
+      "example": "Urgent: the prod build is broken."
+    },
+    {
+      "id": "URG-008",
+      "phrase": "urgently",
+      "category": "urgency",
+      "severity": "low",
+      "example": "Urgently need a hotfix for the checkout page."
+    },
+    {
+      "id": "URG-009",
+      "phrase": "as soon as possible",
+      "category": "urgency",
+      "severity": "low",
+      "example": "As soon as possible, swap the hero image."
+    },
+    {
+      "id": "URG-010",
+      "phrase": "right away",
+      "category": "urgency",
+      "severity": "low",
+      "example": "Need to ship this right away \u2014 investors are visiting."
+    },
+    {
+      "id": "URG-011",
+      "phrase": "before friday",
+      "category": "urgency",
+      "severity": "medium",
+      "example": "Has to be live before Friday."
+    },
+    {
+      "id": "URG-012",
+      "phrase": "before monday",
+      "category": "urgency",
+      "severity": "medium",
+      "example": "Need this in users' hands before Monday."
+    },
+    {
+      "id": "URG-013",
+      "phrase": "before the weekend",
+      "category": "urgency",
+      "severity": "medium",
+      "example": "Push the redesign before the weekend, ideally."
+    },
+    {
+      "id": "URG-014",
+      "phrase": "by close of business",
+      "category": "urgency",
+      "severity": "medium",
+      "example": "By close of business: send over the revised flow."
+    },
+    {
+      "id": "URG-015",
+      "phrase": "by cob",
+      "category": "urgency",
+      "severity": "medium",
+      "example": "By COB please \u2014 we're presenting tomorrow."
+    },
+    {
+      "id": "LEV-001",
+      "phrase": "since you already",
+      "category": "relationship_leverage",
+      "severity": "high",
+      "example": "Since you already built the auth, can you also add SSO?"
+    },
+    {
+      "id": "LEV-002",
+      "phrase": "since you know",
+      "category": "relationship_leverage",
+      "severity": "high",
+      "example": "Since you know how the API is structured, can you add the rate-limit logic?"
+    },
+    {
+      "id": "LEV-003",
+      "phrase": "since you understand",
+      "category": "relationship_leverage",
+      "severity": "high",
+      "example": "Since you understand the data model, mind adding a migration script?"
+    },
+    {
+      "id": "LEV-004",
+      "phrase": "since you've been",
+      "category": "relationship_leverage",
+      "severity": "high",
+      "example": "Since you've been the closest to the codebase, could you onboard the new engineer?"
+    },
+    {
+      "id": "LEV-005",
+      "phrase": "you know our system",
+      "category": "relationship_leverage",
+      "severity": "high",
+      "example": "You know our system best \u2014 can you also do the spec for v2?"
+    },
+    {
+      "id": "LEV-006",
+      "phrase": "you've already",
+      "category": "relationship_leverage",
+      "severity": "high",
+      "example": "You've already done the hard part \u2014 the rest should be quick."
+    },
+    {
+      "id": "LEV-007",
+      "phrase": "you're already in there",
+      "category": "relationship_leverage",
+      "severity": "high",
+      "example": "You're already in there \u2014 please rename the variables while you're at it."
+    },
+    {
+      "id": "LEV-008",
+      "phrase": "you're already familiar",
+      "category": "relationship_leverage",
+      "severity": "high",
+      "example": "You're already familiar with the deploy pipeline \u2014 handle this one too?"
+    },
+    {
+      "id": "LEV-009",
+      "phrase": "you're already up to speed",
+      "category": "relationship_leverage",
+      "severity": "high",
+      "example": "You're already up to speed on the brand \u2014 design the new pitch deck?"
+    },
+    {
+      "id": "LEV-010",
+      "phrase": "you know the code",
+      "category": "relationship_leverage",
+      "severity": "high",
+      "example": "You know the code best \u2014 could you also write the docs?"
+    },
+    {
+      "id": "CMP-001",
+      "phrase": "the old designer",
+      "category": "comparison_shame",
+      "severity": "medium",
+      "example": "The old designer used to turn this around in a day."
+    },
+    {
+      "id": "CMP-002",
+      "phrase": "the previous developer",
+      "category": "comparison_shame",
+      "severity": "medium",
+      "example": "The previous developer used to include unit tests."
+    },
+    {
+      "id": "CMP-003",
+      "phrase": "our last contractor",
+      "category": "comparison_shame",
+      "severity": "medium",
+      "example": "Our last contractor would have built this in a weekend."
+    },
+    {
+      "id": "CMP-004",
+      "phrase": "the agency we used",
+      "category": "comparison_shame",
+      "severity": "medium",
+      "example": "The agency we used for v1 included QA in the price."
+    },
+    {
+      "id": "CMP-005",
+      "phrase": "competitor does this",
+      "category": "comparison_shame",
+      "severity": "medium",
+      "example": "Our competitor does this with one click \u2014 can we?"
+    },
+    {
+      "id": "CMP-006",
+      "phrase": "the other guy",
+      "category": "comparison_shame",
+      "severity": "medium",
+      "example": "The other guy we talked to said he could do it for half."
+    },
+    {
+      "id": "CMP-007",
+      "phrase": "another freelancer",
+      "category": "comparison_shame",
+      "severity": "medium",
+      "example": "Another freelancer offered to throw in social cards for free."
+    },
+    {
+      "id": "CMP-008",
+      "phrase": "saw on another site",
+      "category": "comparison_shame",
+      "severity": "low",
+      "example": "Saw on another site how they handle the modal \u2014 can we copy that?"
+    },
+    {
+      "id": "CMP-009",
+      "phrase": "not as good as",
+      "category": "comparison_shame",
+      "severity": "medium",
+      "example": "It's just not as good as what we had before."
+    },
+    {
+      "id": "CMP-010",
+      "phrase": "i've seen people",
+      "category": "comparison_shame",
+      "severity": "medium",
+      "example": "I've seen people do this kind of thing in a day."
+    },
+    {
+      "id": "SPC-001",
+      "phrase": "make it more",
+      "category": "specification_creep",
+      "severity": "medium",
+      "example": "Make it more polished \u2014 feels slightly cheap right now."
+    },
+    {
+      "id": "SPC-002",
+      "phrase": "but with",
+      "category": "specification_creep",
+      "severity": "low",
+      "example": "Approved, but with the original blue (not the new one)."
+    },
+    {
+      "id": "SPC-003",
+      "phrase": "but also",
+      "category": "specification_creep",
+      "severity": "low",
+      "example": "Looks great but also can we get a hover state?"
+    },
+    {
+      "id": "SPC-004",
+      "phrase": "but make it",
+      "category": "specification_creep",
+      "severity": "medium",
+      "example": "But make it pop more."
+    },
+    {
+      "id": "SPC-005",
+      "phrase": "polish",
+      "category": "specification_creep",
+      "severity": "low",
+      "example": "Just need a final polish pass."
+    },
+    {
+      "id": "SPC-006",
+      "phrase": "a bit more",
+      "category": "specification_creep",
+      "severity": "low",
+      "example": "A bit more contrast on the buttons, please."
+    },
+    {
+      "id": "SPC-007",
+      "phrase": "a little more",
+      "category": "specification_creep",
+      "severity": "low",
+      "example": "A little more breathing room around the headline."
+    },
+    {
+      "id": "SPC-008",
+      "phrase": "slightly more",
+      "category": "specification_creep",
+      "severity": "low",
+      "example": "Slightly more rounded corners on the cards."
+    },
+    {
+      "id": "SPC-009",
+      "phrase": "the look",
+      "category": "specification_creep",
+      "severity": "low",
+      "example": "Can you take another pass at the look?"
+    },
+    {
+      "id": "SPC-010",
+      "phrase": "the feel",
+      "category": "specification_creep",
+      "severity": "low",
+      "example": "It needs to have more of a premium feel."
+    },
+    {
+      "id": "SPC-011",
+      "phrase": "more like",
+      "category": "specification_creep",
+      "severity": "medium",
+      "example": "Can we make it more like Linear's homepage?"
+    },
+    {
+      "id": "SPC-012",
+      "phrase": "closer to",
+      "category": "specification_creep",
+      "severity": "medium",
+      "example": "Get the layout closer to what Stripe is doing."
+    },
+    {
+      "id": "SPC-013",
+      "phrase": "feels off",
+      "category": "specification_creep",
+      "severity": "medium",
+      "example": "Something about the spacing feels off \u2014 can you take another look?"
+    },
+    {
+      "id": "SPC-014",
+      "phrase": "the gradient",
+      "category": "specification_creep",
+      "severity": "medium",
+      "example": "Can the gradient be softer? Currently it feels jarring."
+    },
+    {
+      "id": "SPC-015",
+      "phrase": "the shadow",
+      "category": "specification_creep",
+      "severity": "medium",
+      "example": "The shadow needs to be more subtle on the cards."
+    },
+    {
+      "id": "SPC-016",
+      "phrase": "the contrast",
+      "category": "specification_creep",
+      "severity": "medium",
+      "example": "Bump the contrast on the buttons \u2014 they're hard to find."
+    },
+    {
+      "id": "SPC-017",
+      "phrase": "the alignment",
+      "category": "specification_creep",
+      "severity": "low",
+      "example": "The alignment in the footer is slightly off."
+    },
+    {
+      "id": "SPC-018",
+      "phrase": "the typography",
+      "category": "specification_creep",
+      "severity": "medium",
+      "example": "The typography could feel more premium \u2014 try a serif?"
+    },
+    {
+      "id": "SPC-019",
+      "phrase": "feels too",
+      "category": "specification_creep",
+      "severity": "medium",
+      "example": "Feels too cluttered up top. Strip something out."
+    },
+    {
+      "id": "SPC-020",
+      "phrase": "breathing room",
+      "category": "specification_creep",
+      "severity": "low",
+      "example": "Needs more breathing room around the headline."
+    },
+    {
+      "id": "SPC-021",
+      "phrase": "more whitespace",
+      "category": "specification_creep",
+      "severity": "low",
+      "example": "More whitespace between sections, please."
+    },
+    {
+      "id": "SPC-022",
+      "phrase": "less whitespace",
+      "category": "specification_creep",
+      "severity": "low",
+      "example": "Less whitespace \u2014 feels too sparse right now."
+    },
+    {
+      "id": "SPC-023",
+      "phrase": "more minimal",
+      "category": "specification_creep",
+      "severity": "medium",
+      "example": "Make it more minimal \u2014 there's too much going on."
+    },
+    {
+      "id": "SPC-024",
+      "phrase": "more elegant",
+      "category": "specification_creep",
+      "severity": "medium",
+      "example": "Can the modal feel more elegant? Try thinner lines."
+    },
+    {
+      "id": "SPC-025",
+      "phrase": "more modern",
+      "category": "specification_creep",
+      "severity": "medium",
+      "example": "The hero feels dated \u2014 make it more modern."
+    },
+    {
+      "id": "SPC-026",
+      "phrase": "more on-brand",
+      "category": "specification_creep",
+      "severity": "medium",
+      "example": "The CTA color isn't quite right \u2014 needs to feel more on-brand."
+    },
+    {
+      "id": "SPC-027",
+      "phrase": "tighter",
+      "category": "specification_creep",
+      "severity": "low",
+      "example": "Tighter line-height on the body copy."
+    },
+    {
+      "id": "SPC-028",
+      "phrase": "softer",
+      "category": "specification_creep",
+      "severity": "low",
+      "example": "Softer rounded corners across all cards."
+    },
+    {
+      "id": "SPC-029",
+      "phrase": "bolder",
+      "category": "specification_creep",
+      "severity": "low",
+      "example": "Bolder weight on the headline \u2014 current looks weak."
+    },
+    {
+      "id": "SPC-030",
+      "phrase": "make it punchier",
+      "category": "specification_creep",
+      "severity": "medium",
+      "example": "Make the headline copy punchier \u2014 cut every other word."
+    },
+    {
+      "id": "SPC-031",
+      "phrase": "more conversational",
+      "category": "specification_creep",
+      "severity": "medium",
+      "example": "Body copy could be more conversational \u2014 less marketing."
+    },
+    {
+      "id": "SPC-032",
+      "phrase": "more professional",
+      "category": "specification_creep",
+      "severity": "medium",
+      "example": "Make it sound more professional \u2014 less playful."
+    },
+    {
+      "id": "SPC-033",
+      "phrase": "less corporate",
+      "category": "specification_creep",
+      "severity": "medium",
+      "example": "Less corporate. Sound like a human."
+    },
+    {
+      "id": "SPC-034",
+      "phrase": "the voice",
+      "category": "specification_creep",
+      "severity": "medium",
+      "example": "The voice needs to be more confident throughout."
+    },
+    {
+      "id": "SPC-035",
+      "phrase": "rewrite the headline",
+      "category": "specification_creep",
+      "severity": "high",
+      "example": "Rewrite the headline \u2014 and the subhead \u2014 and the CTA."
+    },
+    {
+      "id": "REV-001",
+      "phrase": "one more round",
+      "category": "revision_cycle",
+      "severity": "high",
+      "example": "Let's do one more round on the homepage."
+    },
+    {
+      "id": "REV-002",
+      "phrase": "one more revision",
+      "category": "revision_cycle",
+      "severity": "high",
+      "example": "One more revision on the email templates and we're done."
+    },
+    {
+      "id": "REV-003",
+      "phrase": "one more pass",
+      "category": "revision_cycle",
+      "severity": "high",
+      "example": "One more pass on the brand colors should do it."
+    },
+    {
+      "id": "REV-004",
+      "phrase": "one more iteration",
+      "category": "revision_cycle",
+      "severity": "high",
+      "example": "One more iteration on the dashboard layout."
+    },
+    {
+      "id": "REV-005",
+      "phrase": "another round",
+      "category": "revision_cycle",
+      "severity": "high",
+      "example": "Need to do another round of revisions with the stakeholders."
+    },
+    {
+      "id": "REV-006",
+      "phrase": "another revision",
+      "category": "revision_cycle",
+      "severity": "high",
+      "example": "Going to need another revision \u2014 leadership has notes."
+    },
+    {
+      "id": "REV-007",
+      "phrase": "final revision",
+      "category": "revision_cycle",
+      "severity": "medium",
+      "example": "Final revision, I promise \u2014 change the headline."
+    },
+    {
+      "id": "REV-008",
+      "phrase": "final pass",
+      "category": "revision_cycle",
+      "severity": "medium",
+      "example": "Final pass: adjust the line-height on body copy."
+    },
+    {
+      "id": "REV-009",
+      "phrase": "last revision",
+      "category": "revision_cycle",
+      "severity": "medium",
+      "example": "Last revision \u2014 bump the H1 size."
+    },
+    {
+      "id": "REV-010",
+      "phrase": "last round",
+      "category": "revision_cycle",
+      "severity": "medium",
+      "example": "Last round of changes before launch."
+    },
+    {
+      "id": "REV-011",
+      "phrase": "last tweak",
+      "category": "revision_cycle",
+      "severity": "medium",
+      "example": "Last tweak \u2014 center-align the headline."
+    },
+    {
+      "id": "REV-012",
+      "phrase": "final tweak",
+      "category": "revision_cycle",
+      "severity": "medium",
+      "example": "Final tweak: shrink the logo by 10%."
+    },
+    {
+      "id": "REV-013",
+      "phrase": "tiny revision",
+      "category": "revision_cycle",
+      "severity": "high",
+      "example": "Tiny revision: redo the entire CTA section."
+    },
+    {
+      "id": "DEF-001",
+      "phrase": "we forgot to mention",
+      "category": "deferred_spec",
+      "severity": "high",
+      "example": "Oh, we forgot to mention \u2014 it also needs to work in Safari."
+    },
+    {
+      "id": "DEF-002",
+      "phrase": "forgot to mention",
+      "category": "deferred_spec",
+      "severity": "high",
+      "example": "I forgot to mention the dashboard needs role-based access."
+    },
+    {
+      "id": "DEF-003",
+      "phrase": "actually we also",
+      "category": "deferred_spec",
+      "severity": "high",
+      "example": "Actually we also need a CSV import flow."
+    },
+    {
+      "id": "DEF-004",
+      "phrase": "actually we need",
+      "category": "deferred_spec",
+      "severity": "high",
+      "example": "Actually we need a way to schedule recurring exports."
+    },
+    {
+      "id": "DEF-005",
+      "phrase": "btw can it",
+      "category": "deferred_spec",
+      "severity": "medium",
+      "example": "BTW can it also support 2FA?"
+    },
+    {
+      "id": "DEF-006",
+      "phrase": "by the way",
+      "category": "deferred_spec",
+      "severity": "low",
+      "example": "By the way, the team wants webhook support too."
+    },
+    {
+      "id": "DEF-007",
+      "phrase": "oh and",
+      "category": "deferred_spec",
+      "severity": "medium",
+      "example": "Oh and the brand wants a new favicon as well."
+    },
+    {
+      "id": "DEF-008",
+      "phrase": "one thing i forgot",
+      "category": "deferred_spec",
+      "severity": "high",
+      "example": "One thing I forgot \u2014 the form needs file uploads."
+    },
+    {
+      "id": "DEF-009",
+      "phrase": "meant to mention",
+      "category": "deferred_spec",
+      "severity": "high",
+      "example": "Meant to mention this earlier \u2014 we need a French version of the site."
+    },
+    {
+      "id": "DEF-010",
+      "phrase": "almost forgot",
+      "category": "deferred_spec",
+      "severity": "high",
+      "example": "Almost forgot \u2014 the modal needs to support Tab navigation."
+    },
+    {
+      "id": "TEC-001",
+      "phrase": "make it work on",
+      "category": "technical_creep",
+      "severity": "high",
+      "example": "Make it work on IE11 too \u2014 legal needs it."
+    },
+    {
+      "id": "TEC-002",
+      "phrase": "compatible with",
+      "category": "technical_creep",
+      "severity": "high",
+      "example": "Should be compatible with our Salesforce instance."
+    },
+    {
+      "id": "TEC-003",
+      "phrase": "should also support",
+      "category": "technical_creep",
+      "severity": "high",
+      "example": "It should also support Single Sign-On."
+    },
+    {
+      "id": "TEC-004",
+      "phrase": "needs to work with",
+      "category": "technical_creep",
+      "severity": "high",
+      "example": "Needs to work with our existing webhook infra."
+    },
+    {
+      "id": "TEC-005",
+      "phrase": "needs to integrate with",
+      "category": "technical_creep",
+      "severity": "high",
+      "example": "Needs to integrate with our HubSpot CRM."
+    },
+    {
+      "id": "TEC-006",
+      "phrase": "responsive on",
+      "category": "technical_creep",
+      "severity": "medium",
+      "example": "Make sure it's responsive on iPad mini too."
+    },
+    {
+      "id": "TEC-007",
+      "phrase": "works on mobile",
+      "category": "technical_creep",
+      "severity": "low",
+      "example": "Confirm this works on mobile before merging."
+    },
+    {
+      "id": "TEC-008",
+      "phrase": "works on tablet",
+      "category": "technical_creep",
+      "severity": "medium",
+      "example": "Also make sure it works on tablet \u2014 sales uses iPads."
+    },
+    {
+      "id": "TEC-009",
+      "phrase": "works on ipad",
+      "category": "technical_creep",
+      "severity": "medium",
+      "example": "It should work on iPad in landscape mode."
+    },
+    {
+      "id": "TEC-010",
+      "phrase": "should be accessible",
+      "category": "technical_creep",
+      "severity": "medium",
+      "example": "Should be accessible \u2014 WCAG AA at minimum."
+    },
+    {
+      "id": "TEC-011",
+      "phrase": "accessibility",
+      "category": "technical_creep",
+      "severity": "low",
+      "example": "Add full accessibility \u2014 screen reader support, keyboard nav, the works."
+    },
+    {
+      "id": "TEC-012",
+      "phrase": "support dark mode",
+      "category": "technical_creep",
+      "severity": "medium",
+      "example": "Also needs to support dark mode."
+    },
+    {
+      "id": "TEC-013",
+      "phrase": "needs to be fast",
+      "category": "technical_creep",
+      "severity": "medium",
+      "example": "Needs to be fast \u2014 sub-100ms response."
+    },
+    {
+      "id": "TEC-014",
+      "phrase": "needs unit tests",
+      "category": "technical_creep",
+      "severity": "high",
+      "example": "Before we ship: this needs unit tests."
+    },
+    {
+      "id": "TEC-015",
+      "phrase": "needs e2e tests",
+      "category": "technical_creep",
+      "severity": "high",
+      "example": "Add e2e tests for the checkout flow."
+    },
+    {
+      "id": "TEC-016",
+      "phrase": "add typescript",
+      "category": "technical_creep",
+      "severity": "high",
+      "example": "Add TypeScript to the whole codebase while you're in there."
+    },
+    {
+      "id": "TEC-017",
+      "phrase": "migrate to",
+      "category": "technical_creep",
+      "severity": "high",
+      "example": "Migrate to the new auth provider before next release."
+    },
+    {
+      "id": "ASM-001",
+      "phrase": "i assume",
+      "category": "assumption",
+      "severity": "medium",
+      "example": "I assume the modal also has a close button on Escape."
+    },
+    {
+      "id": "ASM-002",
+      "phrase": "i assumed",
+      "category": "assumption",
+      "severity": "medium",
+      "example": "I assumed analytics would be included by default."
+    },
+    {
+      "id": "ASM-003",
+      "phrase": "of course it'll",
+      "category": "assumption",
+      "severity": "high",
+      "example": "Of course it'll send a confirmation email, right?"
+    },
+    {
+      "id": "ASM-004",
+      "phrase": "of course this includes",
+      "category": "assumption",
+      "severity": "high",
+      "example": "Of course this includes the admin panel?"
+    },
+    {
+      "id": "ASM-005",
+      "phrase": "naturally",
+      "category": "assumption",
+      "severity": "medium",
+      "example": "Naturally we'll also need a way to manage users."
+    },
+    {
+      "id": "ASM-006",
+      "phrase": "obviously this",
+      "category": "assumption",
+      "severity": "high",
+      "example": "Obviously this includes email templates for all states?"
+    },
+    {
+      "id": "ASM-007",
+      "phrase": "this includes right",
+      "category": "assumption",
+      "severity": "high",
+      "example": "This includes mobile responsiveness, right?"
+    },
+    {
+      "id": "ASM-008",
+      "phrase": "this comes with",
+      "category": "assumption",
+      "severity": "medium",
+      "example": "I assume this comes with onboarding emails."
+    },
+    {
+      "id": "ASM-009",
+      "phrase": "standard right",
+      "category": "assumption",
+      "severity": "high",
+      "example": "Forgot password flow is standard, right?"
+    },
+    {
+      "id": "ASM-010",
+      "phrase": "isn't this included",
+      "category": "assumption",
+      "severity": "high",
+      "example": "Isn't this included in the original scope?"
+    },
+    {
+      "id": "ASM-011",
+      "phrase": "i thought this would",
+      "category": "assumption",
+      "severity": "high",
+      "example": "I thought this would also handle file uploads."
+    },
+    {
+      "id": "EMO-001",
+      "phrase": "we really need",
+      "category": "emotional_coercion",
+      "severity": "medium",
+      "example": "We really need this fix before Friday."
+    },
+    {
+      "id": "EMO-002",
+      "phrase": "we're counting on you",
+      "category": "emotional_coercion",
+      "severity": "high",
+      "example": "We're counting on you to deliver this on time."
+    },
+    {
+      "id": "EMO-003",
+      "phrase": "this is critical",
+      "category": "emotional_coercion",
+      "severity": "medium",
+      "example": "This is critical \u2014 the board demo depends on it."
+    },
+    {
+      "id": "EMO-004",
+      "phrase": "the team really",
+      "category": "emotional_coercion",
+      "severity": "medium",
+      "example": "The team really wants this in v1."
+    },
+    {
+      "id": "EMO-005",
+      "phrase": "desperately",
+      "category": "emotional_coercion",
+      "severity": "medium",
+      "example": "We desperately need the analytics page working."
+    },
+    {
+      "id": "EMO-006",
+      "phrase": "please can you",
+      "category": "emotional_coercion",
+      "severity": "low",
+      "example": "Please can you push this out tonight?"
+    },
+    {
+      "id": "EMO-007",
+      "phrase": "we'd really appreciate",
+      "category": "emotional_coercion",
+      "severity": "medium",
+      "example": "We'd really appreciate it if you could squeeze this in."
+    },
+    {
+      "id": "EMO-008",
+      "phrase": "it would mean a lot",
+      "category": "emotional_coercion",
+      "severity": "high",
+      "example": "It would mean a lot to the team if you could add this."
+    },
+    {
+      "id": "EMO-009",
+      "phrase": "huge favor",
+      "category": "emotional_coercion",
+      "severity": "high",
+      "example": "Huge favor \u2014 can you also style the receipt emails?"
+    },
+    {
+      "id": "EMO-010",
+      "phrase": "do me a solid",
+      "category": "emotional_coercion",
+      "severity": "high",
+      "example": "Do me a solid and add the export button before tomorrow's demo."
+    },
+    {
+      "id": "FAQ-001",
+      "phrase": "could you take a look",
+      "category": "fake_question",
+      "severity": "medium",
+      "example": "Could you take a look at the contact form? It's not sending."
+    },
+    {
+      "id": "FAQ-002",
+      "phrase": "would you mind",
+      "category": "fake_question",
+      "severity": "medium",
+      "example": "Would you mind adding a quick loading spinner?"
+    },
+    {
+      "id": "FAQ-003",
+      "phrase": "if you have a sec",
+      "category": "fake_question",
+      "severity": "medium",
+      "example": "If you have a sec \u2014 the button alignment is off on mobile."
+    },
+    {
+      "id": "FAQ-004",
+      "phrase": "when you get a chance",
+      "category": "fake_question",
+      "severity": "low",
+      "example": "When you get a chance, can you re-export the assets?"
+    },
+    {
+      "id": "FAQ-005",
+      "phrase": "whenever you have time",
+      "category": "fake_question",
+      "severity": "low",
+      "example": "Whenever you have time \u2014 the footer needs an update."
+    },
+    {
+      "id": "FAQ-006",
+      "phrase": "no rush but",
+      "category": "fake_question",
+      "severity": "medium",
+      "example": "No rush but: can you add CSV export?"
+    },
+    {
+      "id": "FAQ-007",
+      "phrase": "if you have a moment",
+      "category": "fake_question",
+      "severity": "medium",
+      "example": "If you have a moment, can you fix the typo on /about?"
+    },
+    {
+      "id": "FAQ-008",
+      "phrase": "when you're free",
+      "category": "fake_question",
+      "severity": "low",
+      "example": "When you're free, can you update the brand colors?"
+    },
+    {
+      "id": "FAQ-009",
+      "phrase": "got a second",
+      "category": "fake_question",
+      "severity": "medium",
+      "example": "Got a second to fix the hero image positioning?"
+    },
+    {
+      "id": "FAQ-010",
+      "phrase": "could you just",
+      "category": "fake_question",
+      "severity": "high",
+      "example": "Could you just rebuild the auth screen real quick?"
+    },
+    {
+      "id": "FAQ-011",
+      "phrase": "any chance you could",
+      "category": "fake_question",
+      "severity": "medium",
+      "example": "Any chance you could squeeze in the analytics tracking today?"
+    },
+    {
+      "id": "FAV-001",
+      "phrase": "shouldn't take long",
+      "category": "favor_framing",
+      "severity": "high",
+      "example": "Shouldn't take long \u2014 just hook up the form to Mailchimp."
+    },
+    {
+      "id": "FAV-002",
+      "phrase": "shouldn't be much",
+      "category": "favor_framing",
+      "severity": "high",
+      "example": "Shouldn't be much \u2014 add SSO with Google."
+    },
+    {
+      "id": "FAV-003",
+      "phrase": "wouldn't take long",
+      "category": "favor_framing",
+      "severity": "high",
+      "example": "Wouldn't take long to add a 'remember me' option."
+    },
+    {
+      "id": "FAV-004",
+      "phrase": "wouldn't take much",
+      "category": "favor_framing",
+      "severity": "high",
+      "example": "Wouldn't take much to add a referral link generator."
+    },
+    {
+      "id": "FAV-005",
+      "phrase": "easy to add",
+      "category": "favor_framing",
+      "severity": "high",
+      "example": "Easy to add a download button somewhere on the page."
+    },
+    {
+      "id": "FAV-006",
+      "phrase": "simple addition",
+      "category": "favor_framing",
+      "severity": "high",
+      "example": "Simple addition \u2014 let users sort by date."
+    },
+    {
+      "id": "FAV-007",
+      "phrase": "not a big deal",
+      "category": "favor_framing",
+      "severity": "high",
+      "example": "Not a big deal \u2014 but can you also add Twitter login?"
+    },
+    {
+      "id": "FAV-008",
+      "phrase": "doesn't sound hard",
+      "category": "favor_framing",
+      "severity": "high",
+      "example": "Doesn't sound hard to add a CSV upload."
+    },
+    {
+      "id": "FAV-009",
+      "phrase": "looks simple",
+      "category": "favor_framing",
+      "severity": "high",
+      "example": "Looks simple enough \u2014 could you add multi-currency support?"
+    },
+    {
+      "id": "FAV-010",
+      "phrase": "low effort",
+      "category": "favor_framing",
+      "severity": "high",
+      "example": "Low effort change: make the columns reorderable."
+    },
+    {
+      "id": "FAV-011",
+      "phrase": "low lift",
+      "category": "favor_framing",
+      "severity": "high",
+      "example": "Low lift, I'd think \u2014 add a dark mode toggle."
+    },
+    {
+      "id": "FAV-012",
+      "phrase": "shouldn't be hard",
+      "category": "favor_framing",
+      "severity": "high",
+      "example": "Shouldn't be hard to add bulk delete."
+    },
+    {
+      "id": "FAV-013",
+      "phrase": "easy lift",
+      "category": "favor_framing",
+      "severity": "high",
+      "example": "Easy lift \u2014 wire up the Slack notifications."
+    },
+    {
+      "id": "ADD-026",
+      "phrase": "can we add this",
+      "category": "additive",
+      "severity": "medium",
+      "example": "Can we add this to the homepage too?"
+    },
+    {
+      "id": "ADD-027",
+      "phrase": "what about this",
+      "category": "additive",
+      "severity": "medium",
+      "example": "What about this section \u2014 should we include it?"
+    },
+    {
+      "id": "TRV-020",
+      "phrase": "this would be quick",
+      "category": "trivialize",
+      "severity": "high",
+      "example": "This would be quick \u2014 just a small edit, right?"
+    },
+    {
+      "id": "TRV-021",
+      "phrase": "would be quick, right",
+      "category": "trivialize",
+      "severity": "high",
+      "example": "This would be quick, right? Shouldn't take you long."
+    },
+    {
+      "id": "ADD-028",
+      "phrase": "just one quick extra thing",
+      "category": "additive",
+      "severity": "high",
+      "example": "Just one quick extra thing before signing \u2014 add a contact form."
+    },
+    {
+      "id": "ADD-029",
+      "phrase": "just a few more small changes",
+      "category": "additive",
+      "severity": "high",
+      "example": "Just a few more small changes before launch."
+    },
+    {
+      "id": "URG-016",
+      "phrase": "i need screens today",
+      "category": "urgency",
+      "severity": "high",
+      "example": "I need screens today \u2014 can you push everything else?"
+    },
+    {
+      "id": "URG-017",
+      "phrase": "launching in 2 days",
+      "category": "urgency",
+      "severity": "high",
+      "example": "Launching in 2 days, we need this finished now."
+    },
+    {
+      "id": "SHF-012",
+      "phrase": "copy this app",
+      "category": "scope_shift",
+      "severity": "high",
+      "example": "Can you copy this app for me? Just like Instacart."
+    },
+    {
+      "id": "CMP-011",
+      "phrase": "make it look exactly like",
+      "category": "comparison_shame",
+      "severity": "high",
+      "example": "Make it look exactly like Airbnb."
+    },
+    {
+      "id": "EMO-011",
+      "phrase": "for the greater good",
+      "category": "emotional_coercion",
+      "severity": "high",
+      "example": "For the greater good of the company, can you take the weekend?"
+    },
+    {
+      "id": "EMO-012",
+      "phrase": "we really wanted this client",
+      "category": "emotional_coercion",
+      "severity": "high",
+      "example": "We really wanted this client so we said yes to the timeline."
+    },
+    {
+      "id": "URG-018",
+      "phrase": "format an 80 page rfp today",
+      "category": "urgency",
+      "severity": "high",
+      "example": "Format this 80-page RFP today, we need it for a 5pm pitch."
+    },
+    {
+      "id": "TRV-022",
+      "phrase": "5 or 6 hours",
+      "category": "trivialize",
+      "severity": "high",
+      "example": "Should only take you 5 or 6 hours."
+    },
+    {
+      "id": "SPC-036",
+      "phrase": "can we make it more vibrant",
+      "category": "specification_creep",
+      "severity": "medium",
+      "example": "Can we make it more vibrant? The colors feel flat."
+    },
+    {
+      "id": "ADD-030",
+      "phrase": "can we move it up across all panels",
+      "category": "additive",
+      "severity": "high",
+      "example": "Can we move it up across all panels? They should all match."
+    },
+    {
+      "id": "SPC-037",
+      "phrase": "can we slightly increase the width",
+      "category": "specification_creep",
+      "severity": "medium",
+      "example": "Can we slightly increase the width on the center panel?"
+    },
+    {
+      "id": "SPC-038",
+      "phrase": "looks too tight",
+      "category": "specification_creep",
+      "severity": "low",
+      "example": "The center panel looks too tight."
+    },
+    {
+      "id": "SPC-039",
+      "phrase": "lines up better",
+      "category": "specification_creep",
+      "severity": "low",
+      "example": "Can we make sure it lines up better with the header?"
+    },
+    {
+      "id": "SPC-040",
+      "phrase": "colors feel a bit dull",
+      "category": "specification_creep",
+      "severity": "medium",
+      "example": "The colors feel a bit dull, can we juice them?"
+    },
+    {
+      "id": "SPC-041",
+      "phrase": "a bit dull",
+      "category": "specification_creep",
+      "severity": "low",
+      "example": "Feels a bit dull \u2014 can we punch it up?"
+    },
+    {
+      "id": "EMO-013",
+      "phrase": "we really wanted",
+      "category": "emotional_coercion",
+      "severity": "medium",
+      "example": "We really wanted this in for launch."
+    },
+    {
+      "id": "TRV-023",
+      "phrase": "quick edits",
+      "category": "trivialize",
+      "severity": "medium",
+      "example": "Just open it for quick edits in a PDF editor."
+    },
+    {
+      "id": "ADD-031",
+      "phrase": "quick update or correction",
+      "category": "additive",
+      "severity": "medium",
+      "example": "Can you do a quick update or correction to the price?"
+    },
+    {
+      "id": "ADD-032",
+      "phrase": "add an extra line",
+      "category": "additive",
+      "severity": "medium",
+      "example": "Just add an extra line below the headline."
+    },
+    {
+      "id": "FAV-014",
+      "phrase": "hire me regardless",
+      "category": "favor_framing",
+      "severity": "medium",
+      "example": "I'll hire you regardless of the platform rules."
+    },
+    {
+      "id": "URG-019",
+      "phrase": "fire drill",
+      "category": "urgency",
+      "severity": "high",
+      "example": "Every project with this client is a fire drill."
+    },
+    {
+      "id": "URG-020",
+      "phrase": "next day turnaround",
+      "category": "urgency",
+      "severity": "medium",
+      "example": "We expect next day turnaround on all deliverables."
+    },
+    {
+      "id": "URG-021",
+      "phrase": "cut down to 5 days",
+      "category": "urgency",
+      "severity": "medium",
+      "example": "The week turnaround got cut down to 5 days."
+    },
+    {
+      "id": "VAG-016",
+      "phrase": "we'll figure it out",
+      "category": "vague_future",
+      "severity": "high",
+      "example": "We'll figure it out as we go \u2014 just start building."
+    },
+    {
+      "id": "VAG-017",
+      "phrase": "just exploring",
+      "category": "vague_future",
+      "severity": "medium",
+      "example": "We're just exploring options right now."
+    },
+    {
+      "id": "FAQ-012",
+      "phrase": "quick call",
+      "category": "fake_question",
+      "severity": "medium",
+      "example": "Can we hop on a quick call?"
+    },
+    {
+      "id": "FAQ-013",
+      "phrase": "pick your brain",
+      "category": "fake_question",
+      "severity": "medium",
+      "example": "Can I pick your brain for a few minutes?"
+    },
+    {
+      "id": "URG-022",
+      "phrase": "why hasn't this shipped",
+      "category": "urgency",
+      "severity": "high",
+      "example": "WHY HASN'T THIS SHIPPED YET?"
+    },
+    {
+      "id": "ADD-033",
+      "phrase": "we need designs for this",
+      "category": "additive",
+      "severity": "medium",
+      "example": "We need designs for this new flow too."
+    },
+    {
+      "id": "VAG-018",
+      "phrase": "needs ui/ux design",
+      "category": "vague_future",
+      "severity": "medium",
+      "example": "It needs UI/UX design \u2014 no other spec, just figure it out."
+    },
+    {
+      "id": "VAG-019",
+      "phrase": "improvements later",
+      "category": "vague_future",
+      "severity": "low",
+      "example": "We can do improvements later, just ship the base for now."
+    },
+    {
+      "id": "URG-023",
+      "phrase": "constantly rushed me",
+      "category": "urgency",
+      "severity": "high",
+      "example": "The client constantly rushed me through every decision."
+    },
+    {
+      "id": "ASM-012",
+      "phrase": "i thought you would",
+      "category": "assumption",
+      "severity": "high",
+      "example": "I thought you would include that automatically."
+    },
+    {
+      "id": "ASM-013",
+      "phrase": "we expected this to",
+      "category": "assumption",
+      "severity": "high",
+      "example": "We expected this to come with onboarding screens."
+    },
+    {
+      "id": "REV-014",
+      "phrase": "million changes",
+      "category": "revision_cycle",
+      "severity": "high",
+      "example": "He'd pay for a million changes if we let him."
+    },
+    {
+      "id": "SHF-013",
+      "phrase": "throw away all the work",
+      "category": "scope_shift",
+      "severity": "high",
+      "example": "He wanted to throw away all the work and start over."
+    },
+    {
+      "id": "REV-015",
+      "phrase": "pay for a million changes",
+      "category": "revision_cycle",
+      "severity": "high",
+      "example": "Willing to pay for a million changes \u2014 just keep iterating."
+    },
+    {
+      "id": "URG-024",
+      "phrase": "before we go live",
+      "category": "urgency",
+      "severity": "high",
+      "example": "We need this in before we go live."
+    },
+    {
+      "id": "URG-025",
+      "phrase": "go live tomorrow",
+      "category": "urgency",
+      "severity": "high",
+      "example": "We go live tomorrow \u2014 needs to be done tonight."
+    },
+    {
+      "id": "FAV-015",
+      "phrase": "no big deal",
+      "category": "favor_framing",
+      "severity": "high",
+      "example": "It's no big deal, just a small tweak."
+    },
+    {
+      "id": "ASM-014",
+      "phrase": "plug and play",
+      "category": "assumption",
+      "severity": "medium",
+      "example": "I figured GoHighLevel was plug and play."
+    },
+    {
+      "id": "TRV-024",
+      "phrase": "should be quick",
+      "category": "trivialize",
+      "severity": "high",
+      "example": "Should be quick \u2014 just a tiny adjustment."
+    },
+    {
+      "id": "URG-026",
+      "phrase": "constantly rushed",
+      "category": "urgency",
+      "severity": "high",
+      "example": "The client constantly rushed every delivery."
+    }
   ]
 }

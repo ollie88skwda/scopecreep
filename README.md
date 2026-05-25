@@ -57,7 +57,7 @@ if score >= 2:
     flag(message)
 ```
 
-225 hand-curated phrases across 15 categories (additive, trivializing, vague-future, scope-shift, urgency, relationship-leverage, comparison-shame, spec-creep, revision-cycle, deferred-spec, technical-creep, assumption, emotional-coercion, fake-question, favor-framing). Each phrase tagged with severity (low/medium/high). Each category has a weight multiplier.
+274 hand-curated phrases across 15 categories (additive, trivializing, vague-future, scope-shift, urgency, relationship-leverage, comparison-shame, spec-creep, revision-cycle, deferred-spec, technical-creep, assumption, emotional-coercion, fake-question, favor-framing). Each phrase tagged with severity (low/medium/high). Each category has a weight multiplier.
 
 ---
 

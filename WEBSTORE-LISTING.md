@@ -50,7 +50,7 @@ The pattern is always the same: "Can you also...", "While you're at it...", "Qui
 1. Install the extension and open Settings.
 2. Paste your SOW or project scope (stored locally, never sent anywhere).
 3. Set your hourly rate, your name, and your Slack display name.
-4. Browse Slack normally. The extension watches for scope-expansion language across 225 hand-curated phrases in 15 psychological categories.
+4. Browse Slack normally. The extension watches for scope-expansion language across 274 hand-curated phrases in 15 psychological categories.
 5. When a client message triggers the threshold, you'll see a discrete amber badge in the corner of the message.
 6. Click the badge. The popup opens with:
    • The exact phrase that triggered the flag, quoted

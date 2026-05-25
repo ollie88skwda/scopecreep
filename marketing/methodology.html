@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="How ScopeCreep Notary scores client messages — the exact deterministic algorithm, all 225 phrases categorized, the threshold rule, and what we explicitly don't do.">
+<meta name="description" content="How ScopeCreep Notary scores client messages — the exact deterministic algorithm, all 274 phrases categorized, the threshold rule, and what we explicitly don't do.">
 <meta property="og:title" content="ScopeCreep Notary — How the scoring works">
-<meta property="og:description" content="225 hand-curated phrases across 15 categories. Severity × category weight. Threshold = 2. No machine learning, no LLM at runtime.">
+<meta property="og:description" content="274 hand-curated phrases across 15 categories. Severity × category weight. Threshold = 2. No machine learning, no LLM at runtime.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://scopecreep.app/methodology.html">
 <meta property="og:image" content="https://scopecreep.app/og/og-methodology.png">
@@ -22,7 +22,7 @@
   "@context": "https://schema.org",
   "@type": "TechArticle",
   "headline": "How the scoring works",
-  "description": "225 hand-curated phrases across 15 categories. Severity × category weight × threshold. No machine learning, no LLM at runtime.",
+  "description": "274 hand-curated phrases across 15 categories. Severity × category weight × threshold. No machine learning, no LLM at runtime.",
   "url": "https://scopecreep.app/methodology.html",
   "image": "https://scopecreep.app/og/og-methodology.png",
   "author": {
@@ -108,7 +108,7 @@
 
 <h2>The 30-second version</h2>
 <ol>
-  <li>Extension scans each Slack message you receive against <strong>225 hand-curated phrases</strong> grouped into 15 categories.</li>
+  <li>Extension scans each Slack message you receive against <strong>274 hand-curated phrases</strong> grouped into 15 categories.</li>
   <li>Each matched phrase contributes a small score: <code>severity × category_weight</code>.</li>
   <li>If a message's total score is <strong>≥ 2</strong>, it gets a badge.</li>
   <li>Badge color: amber for medium-severity flag, brick red if any high-severity phrase was matched.</li>
@@ -116,7 +116,7 @@
 </ol>
 
 <h2>The lexicon</h2>
-<p>225 phrases across 15 psychological categories. Each phrase has a severity (<span class="sev low">low</span> <span class="sev medium">medium</span> <span class="sev high">high</span>) and a category weight that nudges the score up or down.</p>
+<p>274 phrases across 15 psychological categories. Each phrase has a severity (<span class="sev low">low</span> <span class="sev medium">medium</span> <span class="sev high">high</span>) and a category weight that nudges the score up or down.</p>
 
 <table>
   <thead><tr><th>Category</th><th>Phrases</th><th>Weight</th></tr></thead>
