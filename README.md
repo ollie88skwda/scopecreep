@@ -2,9 +2,9 @@
 
 Chrome extension that watches client messages in Slack for scope-expanding language, flags them with a discrete badge, and drafts a one-click change-order email so freelancers stop losing $8–15k/yr to unbilled scope creep.
 
-**Status:** v0.4.0 beta — install-tested, awaiting Chrome Web Store listing. Marketing site at [scopecreep.app](https://scopecreep.app) (pending DNS).
+**Status:** v0.4.0 beta — install-tested, awaiting Chrome Web Store listing. Marketing site at [scopecreep-notary.vercel.app](https://scopecreep-notary.vercel.app) (pending DNS).
 
-**Privacy:** zero data collection. No server. No analytics. No LLM at runtime. Everything stays in your browser. See [privacy policy](https://scopecreep.app/privacy.html).
+**Privacy:** zero data collection. No server. No analytics. No LLM at runtime. Everything stays in your browser. See [privacy policy](https://scopecreep-notary.vercel.app/privacy.html).
 
 ---
 
@@ -46,7 +46,7 @@ That's the whole loop.
 
 ## How it works
 
-Deterministic lexicon match — no machine learning, no LLM call at runtime. See [methodology page](https://scopecreep.app/methodology.html) for the full algorithm. Short version:
+Deterministic lexicon match — no machine learning, no LLM call at runtime. See [methodology page](https://scopecreep-notary.vercel.app/methodology.html) for the full algorithm. Short version:
 
 ```
 score = 0
@@ -226,7 +226,7 @@ Open the extension popup → Settings → "Test mode" textarea. Paste any sample
 
 ## Privacy
 
-The extension does not transmit your data anywhere. Full policy: [scopecreep.app/privacy.html](https://scopecreep.app/privacy.html).
+The extension does not transmit your data anywhere. Full policy: [scopecreep-notary.vercel.app/privacy.html](https://scopecreep-notary.vercel.app/privacy.html).
 
 Quick facts:
 - No server (we operate none).

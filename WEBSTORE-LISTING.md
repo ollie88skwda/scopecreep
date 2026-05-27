@@ -5,9 +5,9 @@ All text fields for the Chrome Web Store developer dashboard form. Copy-paste in
 **Pre-flight checklist** before clicking Submit:
 - [ ] `manifest.json` version matches `CHANGELOG.md` top section
 - [ ] Icons present at `icons/icon{16,48,128}.png` (T-021)
-- [ ] Privacy policy live at `https://scopecreep.app/privacy.html` (after T-025 Vercel deploy)
-- [ ] Methodology page live at `https://scopecreep.app/methodology.html` (after T-025)
-- [ ] Marketing site live at `https://scopecreep.app/` (after T-025)
+- [ ] Privacy policy live at `https://scopecreep-notary.vercel.app/privacy.html` (after T-025 Vercel deploy)
+- [ ] Methodology page live at `https://scopecreep-notary.vercel.app/methodology.html` (after T-025)
+- [ ] Marketing site live at `https://scopecreep-notary.vercel.app/` (after T-025)
 - [ ] Domain registered + DNS pointed to Vercel (after T-020)
 - [ ] Screenshots captured + cropped to 1280×800 PNG (after T-026)
 - [ ] One-time $5 developer registration fee paid
@@ -64,11 +64,11 @@ The pattern is always the same: "Can you also...", "While you're at it...", "Qui
 
 → Zero data collection. Everything stays on your device. No servers. No analytics. No tracking.
 
-→ No AI / LLM at runtime. The detection is a deterministic 225-phrase lexicon with severity weights. Fast. Predictable. Private. Read the full algorithm at scopecreep.app/methodology.html — the lexicon is open data.
+→ No AI / LLM at runtime. The detection is a deterministic 225-phrase lexicon with severity weights. Fast. Predictable. Private. Read the full algorithm at scopecreep-notary.vercel.app/methodology.html — the lexicon is open data.
 
 → No subscription required during beta. Free to use end-to-end.
 
-→ Honest "what we don't do" page at scopecreep.app/privacy.html — privacy-first by architecture, not by promise.
+→ Honest "what we don't do" page at scopecreep-notary.vercel.app/privacy.html — privacy-first by architecture, not by promise.
 
 ═══ FEATURES ═══
 
@@ -85,7 +85,7 @@ The pattern is always the same: "Can you also...", "While you're at it...", "Qui
 
 ═══ PRIVACY ═══
 
-Full details at scopecreep.app/privacy.html. Short version:
+Full details at scopecreep-notary.vercel.app/privacy.html. Short version:
 
 • We collect nothing. No servers, no analytics, no tracking.
 • Everything stored locally in chrome.storage.local. Uninstalling deletes it all.
@@ -101,11 +101,11 @@ If you've ever read a client message and thought "ugh, that's another 3 hours of
 
 ═══ LINKS ═══
 
-Website: https://scopecreep.app
-Methodology: https://scopecreep.app/methodology.html
-Privacy policy: https://scopecreep.app/privacy.html
+Website: https://scopecreep-notary.vercel.app
+Methodology: https://scopecreep-notary.vercel.app/methodology.html
+Privacy policy: https://scopecreep-notary.vercel.app/privacy.html
 Source code: https://github.com/ollie88skwda/scopecreep
-Questions: hello@scopecreep.app
+Questions: github.com/ollie88skwda/scopecreep/issues
 ```
 
 ### Category
@@ -165,7 +165,7 @@ The submission form asks for several yes/no declarations. Suggested answers:
 | Do you use or transfer user data for purposes unrelated to the item's single purpose? | **No** |
 | Do you use or transfer user data to determine creditworthiness or for lending purposes? | **No** |
 
-Link the privacy policy when prompted: `https://scopecreep.app/privacy.html`
+Link the privacy policy when prompted: `https://scopecreep-notary.vercel.app/privacy.html`
 
 ---
 

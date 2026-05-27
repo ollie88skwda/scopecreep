@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Privacy questions
-    url: mailto:hello@scopecreep.app
-    about: Email privacy or security concerns directly — not GitHub issues.
+  - name: Privacy / security disclosure
+    url: https://github.com/ollie88skwda/scopecreep/security/advisories/new
+    about: For privacy or security concerns, please open a private Security Advisory rather than a public issue.
   - name: Methodology / how the scoring works
-    url: https://scopecreep.app/methodology.html
+    url: https://scopecreep-notary.vercel.app/methodology.html
     about: Public explanation of the algorithm, lexicon counts, and what we explicitly don't do.

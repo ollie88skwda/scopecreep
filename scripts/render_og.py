@@ -134,7 +134,7 @@ def render(eyebrow: str, headline: str, sub: str, out_path: Path):
 
     # Footer URL right-aligned
     f_url = font(20)
-    url = "scopecreep.app"
+    url = "scopecreep-notary.vercel.app"
     bbox = draw.textbbox((0, 0), url, font=f_url)
     draw.text((W - (bbox[2] - bbox[0]) - 64, H - 64), url, fill=ACCENT, font=f_url)
 

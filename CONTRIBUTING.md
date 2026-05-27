@@ -7,8 +7,8 @@ Thanks for thinking about contributing. ScopeCreep Notary is a deliberately smal
 ## Quick orientation
 
 - **Architecture:** see [README.md](./README.md) Architecture section.
-- **Algorithm:** see [methodology page](https://scopecreep.app/methodology.html).
-- **Privacy stance:** see [privacy policy](https://scopecreep.app/privacy.html) — non-negotiable.
+- **Algorithm:** see [methodology page](https://scopecreep-notary.vercel.app/methodology.html).
+- **Privacy stance:** see [privacy policy](https://scopecreep-notary.vercel.app/privacy.html) — non-negotiable.
 - **Workspace:** active development happens in a separate operator workspace ([`voice/`](https://github.com/[ollie]/voice)) where Claude Code logs every decision. Major changes are decided there first.
 
 ---
@@ -163,7 +163,7 @@ When you click "New issue" on GitHub you'll get a chooser with six templates. Pi
 - **docs: fix or improve documentation** — README / CHANGELOG / marketing / etc.
 - **question: ask anything** — open-ended
 
-Blank issues are disabled — please pick a template. Privacy / security questions go to `hello@scopecreep.app` (paper trail).
+Blank issues are disabled — please pick a template. Privacy / security disclosures should be filed as private Security Advisories at https://github.com/ollie88skwda/scopecreep/security/advisories/new instead of public issues.
 
 ---
 
