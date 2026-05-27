@@ -183,12 +183,17 @@ Planned shots (T-026 fills these):
 
 ---
 
-## Promotional images (optional but recommended)
+## Promotional images (ready to upload)
 
-- Small tile: 440×280
-- Marquee: 1400×560
+All three rendered by `scripts/render_webstore.py` — deterministic, dark-themed, matching the marketing-site palette.
 
-Both should match the marketing-site dark palette + amber accent. Hold off until T-026 ships the real popup screenshots so the promotional images can be assembled from those.
+| Asset                      | Size      | Path                                  | Required? |
+|----------------------------|-----------|---------------------------------------|-----------|
+| Small promo tile           | 440 × 280 | `marketing/webstore/promo-small.png`    | Required for store listing |
+| Large promo tile (carousel)| 920 × 680 | `marketing/webstore/promo-large.png`    | Optional — uploaded if Google features in the carousel |
+| Marquee (featured slot)    | 1400 × 560| `marketing/webstore/promo-marquee.png`  | Optional — only if Google features the listing |
+
+Regenerate with `python3 scripts/render_webstore.py`.
 
 ---
 
