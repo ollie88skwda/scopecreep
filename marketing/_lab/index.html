@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ScopeCreep — design system lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../_tokens.css">
+<link rel="stylesheet" href="../_base.css">
+<style>
+  body { padding: var(--sp-7) 0; }
+  .row { display: flex; gap: var(--sp-4); align-items: center; flex-wrap: wrap; margin-bottom: var(--sp-5); }
+  .swatch { width: 72px; height: 72px; border-radius: var(--r); border: 1px solid var(--line); display: grid; place-items: end center; padding: var(--sp-2); font-family: var(--mono); font-size: 9px; color: rgba(255,255,255,0.5); }
+  hr.div { border: 0; border-top: 1px solid var(--line); margin: var(--sp-7) 0; }
+  section { margin-bottom: var(--sp-8); }
+  h2.section-title { margin-bottom: var(--sp-5); }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5); }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-5); }
+</style>
+</head>
+<body>
+<div class="container">
+  <p class="eyebrow">DESIGN SYSTEM LAB</p>
+  <h1 style="margin-top: var(--sp-3);">Tokens. <span class="em-italic">Verified.</span></h1>
+  <p style="max-width: 600px; margin-top: var(--sp-4);">Every component on this site reads from <code>_tokens.css</code>. No hex codes outside this file.</p>
+
+  <hr class="div">
+
+  <section>
+    <h2 class="section-title">Slate (neutrals)</h2>
+    <div class="row">
+      <div class="swatch" style="background: var(--bg);">--bg</div>
+      <div class="swatch" style="background: var(--panel);">--panel</div>
+      <div class="swatch" style="background: var(--panel-2);">--panel-2</div>
+      <div class="swatch" style="background: var(--panel-3);">--panel-3</div>
+      <div class="swatch" style="background: var(--line);">--line</div>
+      <div class="swatch" style="background: var(--line-strong);">--line-str</div>
+      <div class="swatch" style="background: var(--line-em);">--line-em</div>
+      <div class="swatch" style="background: var(--dim);">--dim</div>
+      <div class="swatch" style="background: var(--muted); color: var(--bg);">--muted</div>
+      <div class="swatch" style="background: var(--ink); color: var(--bg);">--ink</div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">Gold (accent)</h2>
+    <div class="row">
+      <div class="swatch" style="background: var(--accent);">--accent</div>
+      <div class="swatch" style="background: var(--accent-hover);">--hover</div>
+      <div class="swatch" style="background: var(--accent-text); color: var(--bg);">--text</div>
+      <div class="swatch" style="background: var(--accent-strong); color: var(--bg);">--strong</div>
+      <div class="swatch" style="background: var(--accent-soft);">--soft</div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">Tomato (warn)</h2>
+    <div class="row">
+      <div class="swatch" style="background: var(--warn);">--warn</div>
+      <div class="swatch" style="background: var(--warn-text); color: var(--bg);">--text</div>
+      <div class="swatch" style="background: var(--warn-soft);">--soft</div>
+    </div>
+  </section>
+
+  <hr class="div">
+
+  <section>
+    <h2 class="section-title">Typography</h2>
+    <p class="eyebrow">EYEBROW · MONO 11PX · 0.14EM</p>
+    <h1 style="margin-top: var(--sp-3);">Catch the words clients use to <span class="em-italic">quietly</span> add work.</h1>
+    <h2 style="margin-top: var(--sp-5);">How it works in three steps.</h2>
+    <h3 style="margin-top: var(--sp-5);">Section sub-heading (sans 18px)</h3>
+    <p style="margin-top: var(--sp-3); max-width: 640px;">Body copy in Inter Tight. The change order takes 10 seconds. The conversation stays professional. You bill what you signed up for.</p>
+    <p class="meta" style="margin-top: var(--sp-3);">META · MONO 11 · v0.4.0 · open source · runs locally</p>
+  </section>
+
+  <hr class="div">
+
+  <section>
+    <h2 class="section-title">Buttons + chips</h2>
+    <div class="row">
+      <button class="btn btn-primary">Add to Chrome</button>
+      <button class="btn btn-ghost">Open methodology</button>
+      <a class="btn-link press" href="#">Source on GitHub</a>
+    </div>
+    <div class="row">
+      <span class="chip chip-high">HIGH</span>
+      <span class="chip chip-med">MED</span>
+      <span class="chip chip-low">LOW</span>
+    </div>
+  </section>
+
+  <hr class="div">
+
+  <section>
+    <h2 class="section-title">Cards</h2>
+    <div class="grid-3">
+      <div class="card"><p class="eyebrow">FLAGGED MESSAGE</p><p style="margin-top: var(--sp-3);">"Hey can you also add an animated intro?"</p></div>
+      <div class="card card-elevated"><p class="eyebrow">DETECTED</p><p style="margin-top: var(--sp-3); color: var(--ink);">3 hits · score 7.4</p></div>
+      <div class="card"><p class="eyebrow">CONTEXT</p><p style="margin-top: var(--sp-3);">No animation, no video, no copywriting.</p></div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

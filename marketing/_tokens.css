@@ -1,0 +1,98 @@
+/* ScopeCreep Notary — canonical design tokens.
+   Source of truth. Every component reads from here. Never hardcode hex /
+   spacing / type values in HTML or other CSS files — always reference a
+   --token below. Palette sourced from Radix Colors dark scales
+   (Slate, Gold, Tomato) for APCA-tuned accessibility. */
+
+:root {
+  color-scheme: dark;
+
+  /* ─── Color: Radix Slate (neutral base) ──────────────────────────── */
+  --bg:            #111113;  /* slate 1  — page background */
+  --panel:         #18191b;  /* slate 2  — primary surfaces */
+  --panel-2:       #212225;  /* slate 3  — raised cards */
+  --panel-3:       #272a2d;  /* slate 4  — hover / sticky */
+  --line:          #272a2d;  /* slate 4  — hairline borders */
+  --line-strong:   #363a3f;  /* slate 6  — visible borders */
+  --line-em:       #43484e;  /* slate 7  — input borders */
+
+  --ink:           #edeef0;  /* slate 12 — primary text */
+  --muted:         #b0b4ba;  /* slate 11 — secondary text */
+  --dim:           #5a6169;  /* slate 8  — captions, metadata */
+  --faint:         #43484e;  /* slate 7  — disabled */
+
+  /* ─── Color: Radix Gold (accent — money moments only) ────────────── */
+  --accent:        #978365;  /* gold 9   — primary accent (button bg, focal hits) */
+  --accent-hover:  #a39073;  /* gold 10  — accent hover state */
+  --accent-text:   #cbb99f;  /* gold 11  — accent text on dark surfaces */
+  --accent-strong: #e8e2d9;  /* gold 12  — strongest accent text */
+  --accent-soft:   rgba(151, 131, 101, 0.14);  /* gold 9 @ 14% — chip bg */
+  --accent-border: rgba(151, 131, 101, 0.36);  /* gold 9 @ 36% — chip border */
+
+  /* ─── Color: Radix Tomato (warn — high-severity only) ────────────── */
+  --warn:          #e54d2e;  /* tomato 9  — high-severity accent */
+  --warn-text:     #ff977d;  /* tomato 11 — warn text on dark */
+  --warn-soft:     rgba(229, 77, 46, 0.14);
+  --warn-border:   rgba(229, 77, 46, 0.36);
+
+  /* ─── Type families ─────────────────────────────────────────────── */
+  --serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --sans:  "Inter Tight", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --mono:  "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* ─── Type scale ────────────────────────────────────────────────── */
+  --text-eyebrow:    11px;
+  --text-caption:    12px;
+  --text-body-sm:    13px;
+  --text-body:       15px;
+  --text-body-lg:    17px;
+  --text-h3:         18px;
+  --text-h2-sm:      22px;
+  --text-h2:         32px;
+  --text-h1-sm:      36px;
+  --text-h1:         60px;
+
+  /* ─── Spacing scale (4px base, Stripe-style) ───────────────────── */
+  --sp-1:    4px;
+  --sp-2:    8px;
+  --sp-3:   12px;
+  --sp-4:   16px;
+  --sp-5:   24px;
+  --sp-6:   32px;
+  --sp-7:   48px;
+  --sp-8:   64px;
+  --sp-9:   96px;
+  --sp-10: 128px;
+
+  /* ─── Radii ─────────────────────────────────────────────────────── */
+  --r-sm:  4px;
+  --r:     8px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-pill: 999px;
+
+  /* ─── Easing (Emil — strict subset) ──────────────────────────────── */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-snap:   cubic-bezier(0.34, 1.56, 0.64, 1);  /* press feedback only */
+
+  /* ─── Motion durations ──────────────────────────────────────────── */
+  --motion-instant: 80ms;
+  --motion-fast:   140ms;
+  --motion:        220ms;
+  --motion-slow:   360ms;
+
+  /* ─── Layout ────────────────────────────────────────────────────── */
+  --container: 1180px;
+  --container-narrow: 720px;
+}
+
+/* ─── Reduced-motion contract ─────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
