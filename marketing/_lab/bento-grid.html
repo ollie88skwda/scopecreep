@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>sc-bento — lab</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../_tokens.css">
+<link rel="stylesheet" href="../_base.css">
+
+<!-- ── sc-bento component styles (inlined for lab) ───────────────── -->
+<style>
+  .sc-bento {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-5);
+  }
+  .sc-bento__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: var(--sp-6);
+    overflow: hidden;
+    transition:
+      transform var(--motion) var(--ease-out),
+      border-color var(--motion-fast) var(--ease-out),
+      box-shadow var(--motion) var(--ease-out),
+      background var(--motion-fast) var(--ease-out);
+  }
+  .sc-bento__card:hover {
+    transform: translateY(-2px);
+    border-color: var(--line-strong);
+    background: var(--panel-2);
+    box-shadow:
+      0 1px 0 0 rgba(151, 131, 101, 0.08) inset,
+      0 12px 32px -16px rgba(0, 0, 0, 0.6);
+  }
+  .sc-bento__card--lg {
+    grid-column: 1 / -1;
+    padding: var(--sp-7);
+    min-height: 280px;
+  }
+  .sc-bento__step {
+    font-family: var(--mono);
+    font-size: var(--text-eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-text);
+    margin: 0 0 var(--sp-2);
+  }
+  .sc-bento__title {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: var(--text-h3);
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    color: var(--ink);
+    margin: 0;
+  }
+  .sc-bento__card--lg .sc-bento__title { font-size: var(--text-h2-sm); }
+  .sc-bento__title em { font-style: italic; color: var(--accent); font-weight: 400; }
+  .sc-bento__title strong { font-style: normal; font-weight: 500; color: var(--ink); }
+  .sc-bento__body {
+    color: var(--muted);
+    font-size: var(--text-body);
+    line-height: 1.6;
+    margin: var(--sp-2) 0 0;
+    max-width: 48ch;
+  }
+  .sc-bento__card--lg .sc-bento__body {
+    font-size: var(--text-body-lg);
+    max-width: 56ch;
+  }
+  .sc-bento__visual {
+    margin-top: auto;
+    padding-top: var(--sp-5);
+    color: var(--dim);
+    font-family: var(--mono);
+    font-size: var(--text-caption);
+    line-height: 1.45;
+  }
+  .sc-bento__card--lg .sc-bento__visual {
+    position: absolute;
+    right: var(--sp-7);
+    bottom: var(--sp-7);
+    max-width: 42%;
+    padding-top: 0;
+    margin-top: 0;
+    pointer-events: none;
+    text-align: right;
+  }
+  @media (max-width: 720px) {
+    .sc-bento { grid-template-columns: 1fr; gap: var(--sp-4); }
+    .sc-bento__card, .sc-bento__card--lg {
+      grid-column: auto;
+      padding: var(--sp-5);
+      min-height: 0;
+    }
+    .sc-bento__card--lg .sc-bento__visual {
+      position: static;
+      max-width: none;
+      text-align: left;
+      padding-top: var(--sp-4);
+      margin-top: var(--sp-3);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sc-bento__card { transition: none; }
+    .sc-bento__card:hover { transform: none; box-shadow: none; }
+  }
+</style>
+
+<!-- ── lab chrome only ───────────────────────────────────────────── -->
+<style>
+  body { padding: var(--sp-7) 0 var(--sp-9); }
+  .lab-header { margin-bottom: var(--sp-7); }
+  .lab-meta {
+    display: flex; gap: var(--sp-5); flex-wrap: wrap;
+    margin-top: var(--sp-4);
+  }
+  .lab-meta span { color: var(--dim); font-family: var(--mono); font-size: var(--text-caption); }
+  .lab-meta strong { color: var(--ink); font-weight: 500; }
+  .lab-note {
+    margin-top: var(--sp-7);
+    padding: var(--sp-4);
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--r);
+    color: var(--muted);
+    font-size: var(--text-body-sm);
+  }
+  /* mini "illustration" — pure type, no SVG dependency in lab */
+  .lab-illus {
+    font-family: var(--mono);
+    color: var(--dim);
+    line-height: 1.5;
+    white-space: pre;
+  }
+  .lab-illus .hit { color: var(--warn-text); }
+  .lab-illus .ok  { color: var(--accent-text); }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="lab-header">
+    <p class="eyebrow">COMPONENT · SC-BENTO</p>
+    <h1 style="margin-top: var(--sp-3);">How it works in <span class="em-italic">three</span> steps.</h1>
+    <p style="max-width: 640px; margin-top: var(--sp-4);">Paste your SOW. Browse Slack. Click to draft. The change order takes ten seconds.</p>
+    <div class="lab-meta">
+      <span><strong>Layout:</strong> 2-col asymmetric</span>
+      <span><strong>Cards:</strong> 1 wide + 2 stacked</span>
+      <span><strong>Mobile:</strong> single-column stack</span>
+      <span><strong>Hover:</strong> translateY(-2px)</span>
+    </div>
+  </div>
+
+  <!-- ── the bento ─────────────────────────────────────────────── -->
+  <div class="sc-bento">
+    <article class="sc-bento__card sc-bento__card--lg">
+      <p class="sc-bento__step">STEP 01</p>
+      <h3 class="sc-bento__title">Paste your <em>SOW</em>.</h3>
+      <p class="sc-bento__body">Drop the statement of work into the popup once per project. ScopeCreep extracts the deliverables, the dates, and the explicit out-of-scope items. Everything stays local — your contract never leaves the browser.</p>
+      <div class="sc-bento__visual" aria-hidden="true">
+        <pre class="lab-illus">  SOW · Acme Co · v1.2
+  ────────────────────
+  IN  : 4 landing pages
+  IN  : copy + design
+  OUT : animation
+  OUT : video
+  OUT : code</pre>
+      </div>
+    </article>
+
+    <article class="sc-bento__card">
+      <p class="sc-bento__step">STEP 02</p>
+      <h3 class="sc-bento__title">Browse <em>Slack</em>.</h3>
+      <p class="sc-bento__body">Work normally. ScopeCreep watches incoming messages against your SOW and the 274-phrase lexicon. When a request crosses the line, a dot appears in the corner.</p>
+      <div class="sc-bento__visual" aria-hidden="true">
+        <pre class="lab-illus">client: hey can you also
+        add a hover state
+        to every button?
+
+<span class="hit">    ▲ flagged · ADD-001</span>
+<span class="hit">      severity: medium</span></pre>
+      </div>
+    </article>
+
+    <article class="sc-bento__card">
+      <p class="sc-bento__step">STEP 03</p>
+      <h3 class="sc-bento__title">Click to <em>draft</em>.</h3>
+      <p class="sc-bento__body">One click drafts a professional change-order reply quoting the original SOW clause. Edit, send, bill what you signed up for. Ten seconds end-to-end.</p>
+      <div class="sc-bento__visual" aria-hidden="true">
+        <pre class="lab-illus">draft → "Happy to add it!
+        Per SOW §2.1, hover
+        states weren't in
+        the original scope —
+<span class="ok">        $180 + 1 day."</span></pre>
+      </div>
+    </article>
+  </div>
+
+  <div class="lab-note">
+    <strong style="color: var(--ink);">Reduced-motion check:</strong>
+    open this page with system &ldquo;Reduce Motion&rdquo; on (or DevTools &gt; Rendering &gt;
+    Emulate CSS media feature <code>prefers-reduced-motion: reduce</code>).
+    Hovering a card should produce no lift and no shadow transition — only the
+    border/background swap, which is instantaneous under the global 1ms cap
+    set in <code>_tokens.css</code>.
+  </div>
+</div>
+</body>
+</html>

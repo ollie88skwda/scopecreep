@@ -1,0 +1,147 @@
+<!-- ScopeCreep — number-ticker component.
+     Self-contained module. Paste into any page that already loads
+     _tokens.css + _base.css. Initializes itself on DOMContentLoaded.
+
+     Usage:
+       <span class="sc-number-ticker"
+             data-target="8000"
+             data-format="currency"
+             data-duration="1600">0</span>
+
+     Attributes:
+       data-target    — number to count up to (required for animatable)
+       data-format    — "integer" (default) | "currency" | "percent"
+       data-duration  — ms; defaults to 1600
+       data-prefix    — string prepended (e.g. "$"). Auto-set by format.
+       data-suffix    — string appended (e.g. "%"). Auto-set by format.
+       data-static    — if present, content is treated as a literal string
+                         (e.g. "$8–15k") and animation is skipped. Reserve
+                         layout width matches rendered length.
+
+     Reduced-motion:
+       prefers-reduced-motion:reduce → final value rendered on init, no
+       IntersectionObserver, no rAF loop. -->
+
+<style>
+  .sc-number-ticker {
+    display: inline-block;
+    font-variant-numeric: tabular-nums;
+    /* Width reservation is set per-instance via inline min-width (ch units)
+       at init time so layout never shifts when the count completes. */
+  }
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  if (window.__scNumberTickerInit) return;
+  window.__scNumberTickerInit = true;
+
+  var prefersReducedMotion = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function formatNumber(value, format, prefix, suffix) {
+    var n = Math.round(value);
+    var body;
+    if (format === 'currency') {
+      body = (prefix || '$') + n.toLocaleString('en-US');
+    } else if (format === 'percent') {
+      body = n.toLocaleString('en-US') + (suffix || '%');
+    } else {
+      body = (prefix || '') + n.toLocaleString('en-US') + (suffix || '');
+    }
+    return body;
+  }
+
+  // easeOutCubic — standard Magic UI curve
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+  function animate(el, target, duration, format, prefix, suffix) {
+    var start = null;
+    function frame(now) {
+      if (start === null) start = now;
+      var elapsed = now - start;
+      var t = Math.min(elapsed / duration, 1);
+      var eased = easeOutCubic(t);
+      var current = eased * target;
+      el.textContent = formatNumber(current, format, prefix, suffix);
+      if (t < 1) {
+        requestAnimationFrame(frame);
+      } else {
+        el.textContent = formatNumber(target, format, prefix, suffix);
+        el.dataset.scTickerDone = '1';
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function initTicker(el) {
+    if (el.dataset.scTickerReady === '1') return;
+    el.dataset.scTickerReady = '1';
+
+    // Static mode: literal string passed through, no animation. Still
+    // reserve layout width via min-width based on rendered char count.
+    if (el.hasAttribute('data-static')) {
+      var literal = el.getAttribute('data-static') || el.textContent;
+      el.textContent = literal;
+      el.style.minWidth = literal.length + 'ch';
+      return;
+    }
+
+    var target = parseFloat(el.getAttribute('data-target'));
+    if (!isFinite(target)) return;
+
+    var format = el.getAttribute('data-format') || 'integer';
+    var duration = parseInt(el.getAttribute('data-duration'), 10) || 1600;
+    var prefix = el.getAttribute('data-prefix') || '';
+    var suffix = el.getAttribute('data-suffix') || '';
+
+    // Compute the final rendered string to reserve layout width.
+    var finalStr = formatNumber(target, format, prefix, suffix);
+    el.style.minWidth = finalStr.length + 'ch';
+
+    // Seed with a zero-equivalent so layout is stable even pre-trigger.
+    var seedStr = formatNumber(0, format, prefix, suffix);
+    el.textContent = seedStr;
+
+    if (prefersReducedMotion) {
+      el.textContent = finalStr;
+      el.dataset.scTickerDone = '1';
+      return;
+    }
+
+    if (!('IntersectionObserver' in window)) {
+      // Fallback: animate immediately
+      animate(el, target, duration, format, prefix, suffix);
+      return;
+    }
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting && el.dataset.scTickerDone !== '1') {
+          el.dataset.scTickerDone = 'running';
+          animate(el, target, duration, format, prefix, suffix);
+          io.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+    io.observe(el);
+  }
+
+  function initAll(root) {
+    var scope = root || document;
+    var nodes = scope.querySelectorAll('.sc-number-ticker');
+    for (var i = 0; i < nodes.length; i++) initTicker(nodes[i]);
+  }
+
+  // Expose for dynamic content
+  window.scNumberTicker = { init: initAll, initOne: initTicker };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { initAll(); });
+  } else {
+    initAll();
+  }
+})();
+</script>

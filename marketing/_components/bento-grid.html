@@ -1,0 +1,163 @@
+<!-- ScopeCreep — sc-bento (bento-grid) component.
+     Self-contained module. Paste into any page that already loads
+     _tokens.css + _base.css.
+
+     Usage:
+       <div class="sc-bento">
+         <article class="sc-bento__card sc-bento__card--lg">
+           <p class="sc-bento__step">STEP 01</p>
+           <h3 class="sc-bento__title"><em>Paste</em> your SOW</h3>
+           <p class="sc-bento__body">…</p>
+           <div class="sc-bento__visual" aria-hidden="true">…optional…</div>
+         </article>
+         <article class="sc-bento__card">…STEP 02…</article>
+         <article class="sc-bento__card">…STEP 03…</article>
+       </div>
+
+     Layout:
+       - 2-column asymmetric grid. The .sc-bento__card--lg card spans both
+         columns on the first row; cards 2 and 3 sit side-by-side beneath.
+       - Mobile (≤720px): collapses to single column, cards stack in DOM order.
+
+     Reduced-motion:
+       prefers-reduced-motion:reduce → hover lift transform and shadow
+       transition are nullified (transition stripped, transform: none).
+-->
+
+<style>
+  /* ── sc-bento layout ─────────────────────────────────────────────── */
+  .sc-bento {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-5);
+  }
+
+  .sc-bento__card {
+    /* extends .card from _base.css visually but explicit here so the
+       component is paste-portable even if .card classes drift */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: var(--sp-6);
+    overflow: hidden;
+    transition:
+      transform var(--motion) var(--ease-out),
+      border-color var(--motion-fast) var(--ease-out),
+      box-shadow var(--motion) var(--ease-out),
+      background var(--motion-fast) var(--ease-out);
+  }
+
+  .sc-bento__card:hover {
+    transform: translateY(-2px);
+    border-color: var(--line-strong);
+    background: var(--panel-2);
+    box-shadow:
+      0 1px 0 0 rgba(151, 131, 101, 0.08) inset,
+      0 12px 32px -16px rgba(0, 0, 0, 0.6);
+  }
+
+  /* The large hero card spans 2 cols on row 1. The two smaller cards
+     auto-place into row 2, one column each. */
+  .sc-bento__card--lg {
+    grid-column: 1 / -1;
+    padding: var(--sp-7);
+    min-height: 280px;
+  }
+
+  /* ── inner type system ───────────────────────────────────────────── */
+  .sc-bento__step {
+    font-family: var(--mono);
+    font-size: var(--text-eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-text);
+    margin: 0 0 var(--sp-2);
+  }
+
+  .sc-bento__title {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: var(--text-h3);
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    color: var(--ink);
+    margin: 0;
+  }
+  .sc-bento__card--lg .sc-bento__title {
+    font-size: var(--text-h2-sm);
+  }
+  /* Allow a non-italic <em> override for nuance */
+  .sc-bento__title em { font-style: italic; color: var(--accent); font-weight: 400; }
+  .sc-bento__title strong { font-style: normal; font-weight: 500; color: var(--ink); }
+
+  .sc-bento__body {
+    color: var(--muted);
+    font-size: var(--text-body);
+    line-height: 1.6;
+    margin: var(--sp-2) 0 0;
+    max-width: 48ch;
+  }
+  .sc-bento__card--lg .sc-bento__body {
+    font-size: var(--text-body-lg);
+    max-width: 56ch;
+  }
+
+  /* Optional inline illustration slot. By default it floats bottom-right
+     of large cards (decorative); on small cards sits below body. */
+  .sc-bento__visual {
+    margin-top: auto;
+    padding-top: var(--sp-5);
+    color: var(--dim);
+    font-family: var(--mono);
+    font-size: var(--text-caption);
+    line-height: 1.45;
+  }
+  .sc-bento__card--lg .sc-bento__visual {
+    position: absolute;
+    right: var(--sp-7);
+    bottom: var(--sp-7);
+    max-width: 42%;
+    padding-top: 0;
+    margin-top: 0;
+    pointer-events: none;
+    text-align: right;
+  }
+
+  /* ── responsive ──────────────────────────────────────────────────── */
+  @media (max-width: 720px) {
+    .sc-bento {
+      grid-template-columns: 1fr;
+      gap: var(--sp-4);
+    }
+    .sc-bento__card,
+    .sc-bento__card--lg {
+      grid-column: auto;
+      padding: var(--sp-5);
+      min-height: 0;
+    }
+    .sc-bento__card--lg .sc-bento__visual {
+      position: static;
+      max-width: none;
+      text-align: left;
+      padding-top: var(--sp-4);
+      margin-top: var(--sp-3);
+    }
+  }
+
+  /* ── reduced-motion ──────────────────────────────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    .sc-bento__card {
+      transition: none;
+    }
+    .sc-bento__card:hover {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+</style>

@@ -1,0 +1,293 @@
+<!-- ScopeCreep — terminal component.
+     Self-contained animated terminal block. Types out a scripted sequence
+     of inputs / outputs / waits. Used for the "no server" trust proof.
+
+     Usage:
+       <div class="sc-terminal" data-sc-terminal>
+         <script type="application/json" class="sc-terminal-script">
+           [
+             { "type": "input",  "text": "scopecreep --watch slack.com", "speed": 38 },
+             { "type": "output", "text": "loaded 274 phrases (15 categories)", "delay": 240 },
+             { "type": "input",  "text": "tail -f network.log", "speed": 38 },
+             { "type": "wait",   "label": "(waiting...)", "ms": 900 },
+             { "type": "elapsed","label": "12s elapsed",  "ms": 600 },
+             { "type": "output", "text": "0 requests sent", "delay": 200, "tone": "good" }
+           ]
+         </script>
+       </div>
+
+     Step types:
+       input    — typed character-by-character, prefixed with prompt "$"
+       output   — full-line append, prefixed with "→"
+       wait     — italic placeholder line (e.g. "waiting...") shown for `ms`
+       elapsed  — meta line in brackets (e.g. "[12s elapsed]") shown for `ms`
+
+     Optional step fields:
+       speed    — ms per character (input only). Default 40.
+       delay    — ms before the line is committed (output). Default 220.
+       tone     — "good" | "warn" | "muted" — sets line color via tokens.
+
+     Loop behavior: script runs once, then pauses 3.2s, then restarts.
+
+     Reduced-motion: renders the entire final transcript instantly, skips
+     looping. -->
+
+<style>
+  .sc-terminal {
+    background: var(--panel-2);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-md);
+    font-family: var(--mono);
+    font-size: var(--text-body-sm);
+    line-height: 1.7;
+    color: var(--ink);
+    overflow: hidden;
+    box-shadow: 0 12px 32px -16px rgba(0, 0, 0, 0.6);
+  }
+  .sc-terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-3) var(--sp-4);
+    border-bottom: 1px solid var(--line);
+    background: var(--panel-3);
+  }
+  .sc-terminal-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--line-em);
+  }
+  .sc-terminal-title {
+    margin-left: var(--sp-3);
+    color: var(--dim);
+    font-size: var(--text-eyebrow);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .sc-terminal-body {
+    padding: var(--sp-5);
+    min-height: 220px;
+  }
+  .sc-terminal-line {
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .sc-terminal-line[data-kind="input"] {
+    color: var(--ink);
+  }
+  .sc-terminal-line[data-kind="input"]::before {
+    content: "$ ";
+    color: var(--accent-text);
+  }
+  .sc-terminal-line[data-kind="output"] {
+    color: var(--muted);
+  }
+  .sc-terminal-line[data-kind="output"]::before {
+    content: "→ ";
+    color: var(--dim);
+  }
+  .sc-terminal-line[data-tone="good"] {
+    color: var(--accent-text);
+  }
+  .sc-terminal-line[data-tone="warn"] {
+    color: var(--warn-text);
+  }
+  .sc-terminal-line[data-tone="muted"] {
+    color: var(--dim);
+  }
+  .sc-terminal-line[data-kind="wait"],
+  .sc-terminal-line[data-kind="elapsed"] {
+    color: var(--dim);
+    font-style: italic;
+  }
+  .sc-terminal-caret {
+    display: inline-block;
+    width: 8px;
+    height: 1.05em;
+    margin-left: 1px;
+    vertical-align: -0.18em;
+    background: var(--accent-text);
+    animation: sc-caret-blink 1s steps(2, start) infinite;
+  }
+  @keyframes sc-caret-blink {
+    to { background: transparent; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sc-terminal-caret { animation: none; opacity: 0.6; }
+  }
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  if (window.__scTerminalInit) return;
+  window.__scTerminalInit = true;
+
+  var prefersReducedMotion = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function sleep(ms) {
+    return new Promise(function (res) { setTimeout(res, ms); });
+  }
+
+  function makeLine(kind, tone) {
+    var div = document.createElement('div');
+    div.className = 'sc-terminal-line';
+    div.setAttribute('data-kind', kind);
+    if (tone) div.setAttribute('data-tone', tone);
+    return div;
+  }
+
+  function buildChrome(host) {
+    host.innerHTML = '';
+    var bar = document.createElement('div');
+    bar.className = 'sc-terminal-bar';
+    ['', '', ''].forEach(function () {
+      var d = document.createElement('span');
+      d.className = 'sc-terminal-dot';
+      bar.appendChild(d);
+    });
+    var title = document.createElement('span');
+    title.className = 'sc-terminal-title';
+    title.textContent = host.getAttribute('data-title') || 'scopecreep ~ proof';
+    bar.appendChild(title);
+
+    var body = document.createElement('div');
+    body.className = 'sc-terminal-body';
+
+    host.appendChild(bar);
+    host.appendChild(body);
+    return body;
+  }
+
+  function renderFinal(body, steps) {
+    body.innerHTML = '';
+    steps.forEach(function (step) {
+      if (step.type === 'wait' || step.type === 'elapsed') {
+        // Skip transient lines in reduced-motion final render — they exist
+        // only to convey duration, which is meaningless without motion.
+        return;
+      }
+      var line = makeLine(step.type, step.tone);
+      var prefix = '';
+      if (step.type === 'elapsed') prefix = '[' + (step.label || '') + ']';
+      line.textContent = step.text || step.label || '';
+      body.appendChild(line);
+    });
+  }
+
+  async function typeInput(line, text, speed) {
+    for (var i = 0; i < text.length; i++) {
+      line.textContent = text.slice(0, i + 1);
+      await sleep(speed);
+    }
+  }
+
+  async function runScript(body, steps, caret) {
+    body.innerHTML = '';
+    for (var i = 0; i < steps.length; i++) {
+      var step = steps[i];
+      if (step.type === 'input') {
+        var line = makeLine('input');
+        body.appendChild(line);
+        // Move caret to end of typing line during input
+        if (caret && caret.parentNode) caret.parentNode.removeChild(caret);
+        line.appendChild(caret);
+        await typeInput(line, step.text || '', step.speed || 40);
+        // Pause briefly after typing
+        await sleep(220);
+      } else if (step.type === 'output') {
+        await sleep(step.delay || 220);
+        var oline = makeLine('output', step.tone);
+        oline.textContent = step.text || '';
+        body.appendChild(oline);
+      } else if (step.type === 'wait') {
+        var wline = makeLine('wait');
+        wline.textContent = step.label || '(waiting...)';
+        body.appendChild(wline);
+        await sleep(step.ms || 800);
+      } else if (step.type === 'elapsed') {
+        var eline = makeLine('elapsed');
+        eline.textContent = '[' + (step.label || '') + ']';
+        body.appendChild(eline);
+        await sleep(step.ms || 500);
+      }
+    }
+    // Park caret on a fresh prompt at end
+    if (caret) {
+      var tail = makeLine('input');
+      body.appendChild(tail);
+      tail.appendChild(caret);
+    }
+  }
+
+  function readScript(host) {
+    var node = host.querySelector('script.sc-terminal-script');
+    if (!node) return [];
+    try {
+      return JSON.parse(node.textContent);
+    } catch (e) {
+      console.warn('sc-terminal: bad JSON script', e);
+      return [];
+    }
+  }
+
+  async function initTerminal(host) {
+    if (host.dataset.scTerminalReady === '1') return;
+    host.dataset.scTerminalReady = '1';
+
+    var steps = readScript(host);
+    var body = buildChrome(host);
+
+    if (prefersReducedMotion) {
+      renderFinal(body, steps);
+      return;
+    }
+
+    var caret = document.createElement('span');
+    caret.className = 'sc-terminal-caret';
+
+    // Trigger only when visible — saves perf on long pages.
+    var started = false;
+    function start() {
+      if (started) return;
+      started = true;
+      (async function loop() {
+        while (host.isConnected) {
+          await runScript(body, steps, caret);
+          await sleep(3200);
+        }
+      })();
+    }
+
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            start();
+            io.disconnect();
+          }
+        });
+      }, { threshold: 0.25 });
+      io.observe(host);
+    } else {
+      start();
+    }
+  }
+
+  function initAll(root) {
+    var scope = root || document;
+    var nodes = scope.querySelectorAll('.sc-terminal[data-sc-terminal]');
+    for (var i = 0; i < nodes.length; i++) initTerminal(nodes[i]);
+  }
+
+  window.scTerminal = { init: initAll, initOne: initTerminal };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { initAll(); });
+  } else {
+    initAll();
+  }
+})();
+</script>

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ScopeCreep — lab: sc-shiny-text</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../_tokens.css">
+<link rel="stylesheet" href="../_base.css">
+<style>
+  body { padding-block: var(--sp-7); }
+  .lab-header { margin-bottom: var(--sp-7); }
+  .lab-grid { display: grid; gap: var(--sp-6); }
+  .lab-variant { display: grid; gap: var(--sp-3); }
+  .lab-variant > label { font-family: var(--mono); font-size: var(--text-caption); color: var(--dim); letter-spacing: 0.06em; text-transform: uppercase; }
+  .demo-box { padding: var(--sp-6); border: 1px solid var(--line); border-radius: var(--r-md); background: var(--panel); display: flex; gap: var(--sp-4); align-items: center; flex-wrap: wrap; }
+  .demo-box-stack { display: block; }
+  .rm-demo .sc-shiny-text { animation: none !important; background: none !important; -webkit-text-fill-color: var(--accent-text) !important; color: var(--accent-text) !important; }
+</style>
+
+<!-- inline component styles -->
+<style>
+  .sc-shiny-text {
+    --sc-shimmer-width: 96px;
+    display: inline-block;
+    background:
+      linear-gradient(
+        90deg,
+        transparent calc(50% - var(--sc-shimmer-width) / 2),
+        var(--accent-strong) 50%,
+        transparent calc(50% + var(--sc-shimmer-width) / 2)
+      ),
+      linear-gradient(var(--accent-text), var(--accent-text));
+    background-size: 200% 100%, 100% 100%;
+    background-position: calc(-100% - var(--sc-shimmer-width)) 0, 0 0;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: sc-shiny-text-shimmer 4200ms var(--ease-in-out) infinite;
+  }
+  @keyframes sc-shiny-text-shimmer {
+    0%, 90%, 100% { background-position: calc(-100% - var(--sc-shimmer-width)) 0, 0 0; }
+    30%, 60%      { background-position: calc(100% + var(--sc-shimmer-width)) 0, 0 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sc-shiny-text {
+      animation: none;
+      background: none;
+      -webkit-text-fill-color: var(--accent-text);
+              color: var(--accent-text);
+    }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="lab-header">
+    <p class="eyebrow">LAB · COMPONENT</p>
+    <h1 style="margin-top: var(--sp-3);">sc-<span class="em-italic">shiny-text</span></h1>
+    <p style="margin-top: var(--sp-3); max-width: 600px;">A gold shimmer slides across the text every <code>4.2s</code>. Base color stays at <code>--accent-text</code>; peak hits <code>--accent-strong</code>.</p>
+  </div>
+
+  <div class="lab-grid">
+
+    <div class="lab-variant">
+      <label>VARIANT — DEFAULT EYEBROW (11PX MONO)</label>
+      <div class="demo-box demo-box-stack">
+        <p><span class="eyebrow sc-shiny-text">v0.4.0 · ON THE CHROME WEB STORE</span></p>
+        <p style="margin-top: var(--sp-3);"><span class="eyebrow sc-shiny-text">OPEN SOURCE · RUNS LOCALLY · NO ACCOUNT</span></p>
+      </div>
+    </div>
+
+    <div class="lab-variant">
+      <label>VARIANT — LARGER INLINE LABEL</label>
+      <div class="demo-box demo-box-stack">
+        <p style="font-size: var(--text-body-lg);">Trusted by freelancers who bill <span class="sc-shiny-text" style="font-family: var(--sans); font-weight: 600; letter-spacing: 0;">what they signed up for</span>.</p>
+      </div>
+    </div>
+
+    <div class="lab-variant">
+      <label>VARIANT — REDUCED MOTION (STATIC ACCENT TEXT)</label>
+      <div class="demo-box demo-box-stack rm-demo">
+        <p><span class="eyebrow sc-shiny-text">v0.4.0 · STATIC FALLBACK</span></p>
+        <p class="meta" style="margin-top: var(--sp-3);">Animation removed, color clamps to <code>--accent-text</code>.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

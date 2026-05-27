@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ScopeCreep — terminal lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../_tokens.css">
+<link rel="stylesheet" href="../_base.css">
+<style>
+  body { padding: var(--sp-7) 0 var(--sp-10); }
+  .frame { margin-top: var(--sp-7); max-width: 640px; }
+  .caption {
+    margin-top: var(--sp-4);
+    font-family: var(--mono);
+    font-size: var(--text-caption);
+    color: var(--dim);
+    letter-spacing: 0.04em;
+  }
+
+  /* Component styles — kept inline in the lab to mirror the copy-paste
+     contract in _components/terminal.html. */
+  .sc-terminal {
+    background: var(--panel-2);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-md);
+    font-family: var(--mono);
+    font-size: var(--text-body-sm);
+    line-height: 1.7;
+    color: var(--ink);
+    overflow: hidden;
+    box-shadow: 0 12px 32px -16px rgba(0, 0, 0, 0.6);
+  }
+  .sc-terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-3) var(--sp-4);
+    border-bottom: 1px solid var(--line);
+    background: var(--panel-3);
+  }
+  .sc-terminal-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--line-em);
+  }
+  .sc-terminal-title {
+    margin-left: var(--sp-3);
+    color: var(--dim);
+    font-size: var(--text-eyebrow);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .sc-terminal-body {
+    padding: var(--sp-5);
+    min-height: 220px;
+  }
+  .sc-terminal-line {
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .sc-terminal-line[data-kind="input"] { color: var(--ink); }
+  .sc-terminal-line[data-kind="input"]::before {
+    content: "$ ";
+    color: var(--accent-text);
+  }
+  .sc-terminal-line[data-kind="output"] { color: var(--muted); }
+  .sc-terminal-line[data-kind="output"]::before {
+    content: "→ ";
+    color: var(--dim);
+  }
+  .sc-terminal-line[data-tone="good"]  { color: var(--accent-text); }
+  .sc-terminal-line[data-tone="warn"]  { color: var(--warn-text); }
+  .sc-terminal-line[data-tone="muted"] { color: var(--dim); }
+  .sc-terminal-line[data-kind="wait"],
+  .sc-terminal-line[data-kind="elapsed"] {
+    color: var(--dim);
+    font-style: italic;
+  }
+  .sc-terminal-caret {
+    display: inline-block;
+    width: 8px;
+    height: 1.05em;
+    margin-left: 1px;
+    vertical-align: -0.18em;
+    background: var(--accent-text);
+    animation: sc-caret-blink 1s steps(2, start) infinite;
+  }
+  @keyframes sc-caret-blink { to { background: transparent; } }
+  @media (prefers-reduced-motion: reduce) {
+    .sc-terminal-caret { animation: none; opacity: 0.6; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <p class="eyebrow">COMPONENT LAB</p>
+  <h1 style="margin-top: var(--sp-3);">terminal</h1>
+  <p style="max-width: 640px; margin-top: var(--sp-4);">
+    Types out a scripted sequence of commands, outputs, and waits to prove the
+    "no server" promise. JSON script lives inline. IntersectionObserver delays start
+    until the block is on-screen. Loops with a 3.2s pause between cycles.
+    <code>prefers-reduced-motion</code> renders the final transcript instantly.
+  </p>
+
+  <div class="frame">
+    <div class="sc-terminal" data-sc-terminal data-title="scopecreep ~ proof" data-testid="terminal-no-server">
+      <script type="application/json" class="sc-terminal-script">
+        [
+          { "type": "input",   "text": "scopecreep --watch slack.com", "speed": 36 },
+          { "type": "output",  "text": "loaded 274 phrases (15 categories)", "delay": 260, "tone": "good" },
+          { "type": "input",   "text": "tail -f network.log",          "speed": 36 },
+          { "type": "wait",    "label": "(waiting...)",                "ms": 900 },
+          { "type": "elapsed", "label": "12s elapsed",                 "ms": 700 },
+          { "type": "output",  "text": "0 requests sent",              "delay": 200, "tone": "good" },
+          { "type": "output",  "text": "no auth tokens. no telemetry. no server.", "delay": 280, "tone": "muted" }
+        ]
+      </script>
+    </div>
+    <p class="caption">Proof spine — runs offline, sends nothing.</p>
+  </div>
+</div>
+
+<script src="../_components/terminal.js"></script>
+</body>
+</html>

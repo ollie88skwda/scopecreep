@@ -1,0 +1,54 @@
+<!--
+  ScopeCreep — sc-shiny-text
+  Eyebrow / pre-headline text with a gold-tinted shimmer that slides across.
+  Pairs well with .eyebrow from _base.css. The text base color stays
+  legible while a narrow highlight band passes through periodically.
+
+  Usage:
+    <span class="eyebrow sc-shiny-text">v0.4.0 · ON THE CHROME WEB STORE</span>
+-->
+<span class="eyebrow sc-shiny-text">v0.4.0 · ON THE CHROME WEB STORE</span>
+
+<style>
+  /* Scoped: every selector starts with .sc-shiny-text */
+  .sc-shiny-text {
+    --sc-shimmer-width: 96px;
+
+    display: inline-block;
+    background:
+      linear-gradient(
+        90deg,
+        transparent calc(50% - var(--sc-shimmer-width) / 2),
+        var(--accent-strong) 50%,
+        transparent calc(50% + var(--sc-shimmer-width) / 2)
+      ),
+      linear-gradient(var(--accent-text), var(--accent-text));
+    background-size: 200% 100%, 100% 100%;
+    background-position: calc(-100% - var(--sc-shimmer-width)) 0, 0 0;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: sc-shiny-text-shimmer 4200ms var(--ease-in-out) infinite;
+  }
+
+  @keyframes sc-shiny-text-shimmer {
+    0%, 90%, 100% {
+      background-position: calc(-100% - var(--sc-shimmer-width)) 0, 0 0;
+    }
+    30%, 60% {
+      background-position: calc(100% + var(--sc-shimmer-width)) 0, 0 0;
+    }
+  }
+
+  /* Reduced motion: hold a static state with no moving band. */
+  @media (prefers-reduced-motion: reduce) {
+    .sc-shiny-text {
+      animation: none;
+      background: none;
+      -webkit-text-fill-color: var(--accent-text);
+              color: var(--accent-text);
+    }
+  }
+</style>

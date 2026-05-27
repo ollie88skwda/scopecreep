@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ScopeCreep — number-ticker lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../_tokens.css">
+<link rel="stylesheet" href="../_base.css">
+<style>
+  body { padding: var(--sp-7) 0 var(--sp-10); }
+
+  /* Component style — kept inline in the lab to mirror the copy-paste
+     contract in _components/number-ticker.html. The .js file is the
+     init logic only. */
+  .sc-number-ticker {
+    display: inline-block;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-5);
+    margin-top: var(--sp-7);
+  }
+  @media (max-width: 720px) {
+    .stat-grid { grid-template-columns: 1fr; }
+  }
+  .stat {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: var(--sp-6) var(--sp-5);
+  }
+  .stat-figure {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: var(--text-h1);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--accent-strong);
+    display: block;
+  }
+  @media (max-width: 720px) {
+    .stat-figure { font-size: var(--text-h1-sm); }
+  }
+  .stat-label {
+    margin-top: var(--sp-4);
+    color: var(--muted);
+    font-size: var(--text-body-sm);
+    line-height: 1.55;
+  }
+  .scroll-spacer {
+    height: 90vh;
+    display: grid;
+    place-items: center;
+    border-top: 1px dashed var(--line-strong);
+    margin-top: var(--sp-9);
+    color: var(--dim);
+    font-family: var(--mono);
+    font-size: var(--text-caption);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .scroll-target { margin-top: var(--sp-7); }
+  .demo-inline {
+    margin-top: var(--sp-6);
+    font-family: var(--mono);
+    font-size: var(--text-body);
+    color: var(--muted);
+  }
+  .demo-inline .sc-number-ticker { color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="container">
+  <p class="eyebrow">COMPONENT LAB</p>
+  <h1 style="margin-top: var(--sp-3);">number-ticker</h1>
+  <p style="max-width: 640px; margin-top: var(--sp-4);">
+    Counts integers, currency, and percentages with an easeOutCubic curve over ~1.6s.
+    IntersectionObserver triggers at 30% visibility. Layout width is reserved via
+    <code>min-width</code> in <code>ch</code> units, paired with
+    <code>font-variant-numeric: tabular-nums</code> — zero layout shift, no digit jiggle.
+    <code>prefers-reduced-motion</code> renders the final value immediately.
+  </p>
+
+  <div class="stat-grid">
+    <div class="stat">
+      <span class="sc-number-ticker stat-figure"
+            data-target="8000"
+            data-format="currency"
+            data-duration="1600"
+            data-testid="ticker-currency">0</span>
+      <p class="stat-label">Median scope-creep cost per project ($8,000 floor — the upper bound climbs to $15k).</p>
+    </div>
+    <div class="stat">
+      <span class="sc-number-ticker stat-figure"
+            data-target="72"
+            data-format="percent"
+            data-duration="1600"
+            data-testid="ticker-percent">0</span>
+      <p class="stat-label">Of freelancers say they've eaten unbilled work in the last 12 months.</p>
+    </div>
+    <div class="stat">
+      <span class="sc-number-ticker stat-figure"
+            data-target="274"
+            data-format="integer"
+            data-duration="1600"
+            data-testid="ticker-integer">0</span>
+      <p class="stat-label">Phrases shipped in the detection corpus across 15 categories.</p>
+    </div>
+  </div>
+
+  <p class="demo-inline">
+    Inline mode — current detection corpus has
+    <span class="sc-number-ticker" data-target="274" data-format="integer" data-duration="1200">0</span>
+    phrases across
+    <span class="sc-number-ticker" data-target="15" data-format="integer" data-duration="1200">0</span>
+    categories, flagging
+    <span class="sc-number-ticker" data-target="72" data-format="percent" data-duration="1200">0</span>
+    of test messages.
+  </p>
+
+  <p class="demo-inline">
+    Static range mode (literal string, no animation, width still reserved):
+    <span class="sc-number-ticker" data-static="$8–15k" style="color: var(--ink);">$8–15k</span>
+  </p>
+
+  <div class="scroll-spacer">scroll ↓ to trigger out-of-view ticker</div>
+
+  <div class="scroll-target">
+    <p class="eyebrow">FAR DOWN</p>
+    <h2 style="margin-top: var(--sp-3);">
+      Triggers at 30% visibility:
+      <span class="sc-number-ticker"
+            data-target="12500"
+            data-format="currency"
+            data-duration="1800"
+            data-testid="ticker-late"
+            style="color: var(--accent-strong);">0</span>
+    </h2>
+  </div>
+</div>
+
+<script src="../_components/number-ticker.js"></script>
+</body>
+</html>

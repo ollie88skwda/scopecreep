@@ -1,0 +1,68 @@
+<!--
+  ScopeCreep — sc-shiny-button
+  Primary CTA with a subtle gold shine sweep across the surface.
+  Stacks on top of .btn .btn-primary (from _base.css). Uses a ::before
+  pseudo-element with a linear-gradient that translates left→right.
+
+  Usage:
+    <button class="btn btn-primary sc-shiny-button">Add to Chrome</button>
+    <a class="btn btn-primary sc-shiny-button" href="...">Get started</a>
+-->
+<button class="btn btn-primary sc-shiny-button" type="button">
+  <span class="sc-shiny-button__label">Add to Chrome</span>
+</button>
+
+<style>
+  /* Scoped: every selector starts with .sc-shiny-button */
+  .sc-shiny-button {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .sc-shiny-button__label {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* The shine: a narrow vertical band of light translated across the surface.
+     Sits above the bg, below the label, clipped by overflow:hidden. */
+  .sc-shiny-button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 60%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    transform: translateX(-100%) skewX(-20deg);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.18) 50%,
+      transparent 100%
+    );
+    animation: sc-shiny-button-sweep var(--motion-sweep, 2800ms) var(--ease-out) infinite;
+    animation-delay: 800ms;
+  }
+
+  @keyframes sc-shiny-button-sweep {
+    0%   { transform: translateX(-100%) skewX(-20deg); }
+    60%  { transform: translateX(260%)  skewX(-20deg); }
+    100% { transform: translateX(260%)  skewX(-20deg); }
+  }
+
+  /* Hover accelerates the sweep frequency by setting a shorter duration. */
+  .sc-shiny-button:hover::before {
+    animation-duration: 1600ms;
+  }
+
+  /* Reduced motion: stop the sweep, keep button visually intact. */
+  @media (prefers-reduced-motion: reduce) {
+    .sc-shiny-button::before {
+      animation: none;
+      display: none;
+    }
+  }
+</style>

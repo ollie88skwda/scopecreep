@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ScopeCreep — lab: sc-border-beam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../_tokens.css">
+<link rel="stylesheet" href="../_base.css">
+<style>
+  body { padding-block: var(--sp-7); }
+  .lab-header { margin-bottom: var(--sp-7); }
+  .lab-grid { display: grid; gap: var(--sp-6); }
+  .lab-variant { display: grid; gap: var(--sp-3); }
+  .lab-variant > label { font-family: var(--mono); font-size: var(--text-caption); color: var(--dim); letter-spacing: 0.06em; text-transform: uppercase; }
+  .demo-box { padding: var(--sp-6); border: 1px solid var(--line); border-radius: var(--r-md); background: var(--bg); }
+  .demo-frame { aspect-ratio: 16 / 9; width: 100%; }
+  .demo-frame-square { aspect-ratio: 1 / 1; max-width: 280px; }
+  .demo-content {
+    display: grid; place-items: center; height: 100%;
+    background: linear-gradient(180deg, var(--panel-2), var(--panel));
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: var(--text-caption);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .rm-demo .sc-border-beam {
+    animation: none !important;
+    background: conic-gradient(from 0deg, transparent 0deg, transparent 340deg, var(--accent) 360deg) !important;
+  }
+</style>
+
+<!-- inline component styles -->
+<style>
+  @property --sc-beam-angle {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 0deg;
+  }
+  .sc-border-beam-wrap {
+    position: relative;
+    border-radius: var(--r-lg);
+    background: var(--panel);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .sc-border-beam {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    pointer-events: none;
+    z-index: 1;
+    --sc-beam-angle: 0deg;
+    background: conic-gradient(
+      from var(--sc-beam-angle),
+      transparent 0deg,
+      transparent 320deg,
+      var(--accent) 350deg,
+      var(--accent-strong) 360deg,
+      transparent 360deg
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+            mask-composite: exclude;
+    animation: sc-border-beam-rotate 6s linear infinite;
+  }
+  @keyframes sc-border-beam-rotate {
+    to { --sc-beam-angle: 360deg; }
+  }
+  .sc-border-beam__content {
+    position: relative;
+    z-index: 0;
+    border-radius: inherit;
+    overflow: hidden;
+    height: 100%;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sc-border-beam {
+      animation: none;
+      background: conic-gradient(from 0deg, transparent 0deg, transparent 340deg, var(--accent) 360deg);
+    }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="lab-header">
+    <p class="eyebrow">LAB · COMPONENT</p>
+    <h1 style="margin-top: var(--sp-3);">sc-<span class="em-italic">border-beam</span></h1>
+    <p style="margin-top: var(--sp-3); max-width: 600px;">A gold arc rotates around the border every <code>6s</code>. Uses <code>@property --sc-beam-angle</code> to animate a conic gradient. Reduced motion freezes it as a glow at the top-right.</p>
+  </div>
+
+  <div class="lab-grid">
+
+    <div class="lab-variant">
+      <label>VARIANT — DEFAULT (16:9, FRAMES DEMO LOOP)</label>
+      <div class="demo-box">
+        <div class="sc-border-beam-wrap demo-frame">
+          <div class="sc-border-beam" aria-hidden="true"></div>
+          <div class="sc-border-beam__content">
+            <div class="demo-content">12S DEMO LOOP — VIDEO HERE</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lab-variant">
+      <label>VARIANT — SQUARE / TIGHT RADIUS (FRAMES A CARD)</label>
+      <div class="demo-box" style="display: flex; justify-content: center;">
+        <div class="sc-border-beam-wrap demo-frame demo-frame-square" style="border-radius: var(--r-md);">
+          <div class="sc-border-beam" aria-hidden="true"></div>
+          <div class="sc-border-beam__content">
+            <div class="demo-content" style="text-align: center; padding: var(--sp-5);">FEATURED<br>CARD</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lab-variant">
+      <label>VARIANT — REDUCED MOTION (BEAM HELD AS STATIC GLOW)</label>
+      <div class="demo-box rm-demo">
+        <div class="sc-border-beam-wrap demo-frame">
+          <div class="sc-border-beam" aria-hidden="true"></div>
+          <div class="sc-border-beam__content">
+            <div class="demo-content">STATIC FALLBACK · NO ROTATION</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

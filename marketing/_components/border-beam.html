@@ -1,0 +1,93 @@
+<!--
+  ScopeCreep — sc-border-beam
+  Animated luminous border for framing a focal element (e.g. demo loop).
+  A conic-gradient rotates inside a pseudo-element, masked to a thin
+  ring matching the parent border-radius. Pure CSS, works on rounded corners.
+
+  Usage (the wrapper must position:relative + a border-radius):
+    <div class="sc-border-beam-wrap">
+      <div class="sc-border-beam" aria-hidden="true"></div>
+      <div class="sc-border-beam__content">
+        ...content here (e.g. <img>, <video>, <iframe>)...
+      </div>
+    </div>
+-->
+<div class="sc-border-beam-wrap">
+  <div class="sc-border-beam" aria-hidden="true"></div>
+  <div class="sc-border-beam__content">
+    <!-- consumer content -->
+  </div>
+</div>
+
+<style>
+  /* Scoped: every selector starts with .sc-border-beam */
+  .sc-border-beam-wrap {
+    position: relative;
+    border-radius: var(--r-lg);
+    background: var(--panel);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* @property registers --sc-beam-angle as an animatable <angle>, so the
+     conic-gradient's `from` rotates smoothly without rotating the element. */
+  @property --sc-beam-angle {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 0deg;
+  }
+
+  .sc-border-beam {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;                 /* beam thickness */
+    pointer-events: none;
+    z-index: 1;
+    --sc-beam-angle: 0deg;
+    /* The rotating conic-gradient: one short bright arc, rest transparent. */
+    background: conic-gradient(
+      from var(--sc-beam-angle),
+      transparent 0deg,
+      transparent 320deg,
+      var(--accent) 350deg,
+      var(--accent-strong) 360deg,
+      transparent 360deg
+    );
+    /* Mask to a ring: subtract inner rect, keep only the 1px outline. */
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+            mask-composite: exclude;
+    animation: sc-border-beam-rotate 6s linear infinite;
+  }
+
+  @keyframes sc-border-beam-rotate {
+    to { --sc-beam-angle: 360deg; }
+  }
+
+  .sc-border-beam__content {
+    position: relative;
+    z-index: 0;
+    border-radius: inherit;
+    overflow: hidden;
+  }
+
+  /* Reduced motion: hold the beam at rest and let the ring read as a static
+     accent border instead of a rotating light. */
+  @media (prefers-reduced-motion: reduce) {
+    .sc-border-beam {
+      animation: none;
+      background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        transparent 340deg,
+        var(--accent) 360deg
+      );
+    }
+  }
+</style>
