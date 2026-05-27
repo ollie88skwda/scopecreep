@@ -3,218 +3,423 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="How ScopeCreep Notary scores client messages — the exact deterministic algorithm, all 274 phrases categorized, the threshold rule, and what we explicitly don't do.">
-<meta property="og:title" content="ScopeCreep Notary — How the scoring works">
-<meta property="og:description" content="274 hand-curated phrases across 15 categories. Severity × category weight. Threshold = 2. No machine learning, no LLM at runtime.">
-<meta property="og:type" content="website">
+<meta name="description" content="The exact algorithm. 274 hand-curated phrases across 15 categories. Severity × category weight × threshold. No machine learning, no LLM at runtime.">
+<meta property="og:title" content="Methodology · ScopeCreep Notary">
+<meta property="og:description" content="274 phrases. Zero LLM. Zero servers. Read the algorithm.">
+<meta property="og:type" content="article">
 <meta property="og:url" content="https://scopecreep-notary.vercel.app/methodology.html">
 <meta property="og:image" content="https://scopecreep-notary.vercel.app/og/og-methodology.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://scopecreep-notary.vercel.app/og/og-methodology.png">
+<meta name="theme-color" content="#111113">
 <meta name="author" content="Oliver Nguyen">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://scopecreep-notary.vercel.app/methodology.html">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <title>Methodology · ScopeCreep Notary</title>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  "headline": "How the scoring works",
+  "headline": "How ScopeCreep Notary scores client messages",
   "description": "274 hand-curated phrases across 15 categories. Severity × category weight × threshold. No machine learning, no LLM at runtime.",
   "url": "https://scopecreep-notary.vercel.app/methodology.html",
   "image": "https://scopecreep-notary.vercel.app/og/og-methodology.png",
+  "datePublished": "2026-05-24",
+  "dateModified": "2026-05-26",
   "author": {
     "@type": "Person",
-    "name": "Oliver Nguyen"
+    "name": "Oliver Nguyen",
+    "url": "https://github.com/ollie88skwda"
   },
-  "dateModified": "2026-05-24",
-  "isPartOf": {
-    "@type": "WebSite",
-    "name": "ScopeCreep Notary",
-    "url": "https://scopecreep-notary.vercel.app/"
+  "publisher": {
+    "@type": "Organization",
+    "name": "ScopeCreep Notary"
   }
 }
 </script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/_tokens.css">
+<link rel="stylesheet" href="/_base.css">
 <style>
-  :root {
-    --bg: #0a0a0a; --panel: #111111; --line: #1f1f1f;
-    --ink: #e6e6e6; --muted: #9ca3af; --dim: #6b7280;
-    --accent: #d4a64a; --warn: #c95a4a; --ok: #34d399;
+  /* Editorial layout — mirrors privacy.html */
+  .sc-nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(12px);
+    background: rgba(17, 17, 19, 0.72);
+    border-bottom: 1px solid var(--line);
+    padding: var(--sp-3) 0;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { background: var(--bg); color: var(--ink); }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, system-ui, sans-serif; font-size: 15px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
-  .wrap { max-width: 760px; margin: 0 auto; padding: 0 32px; }
+  .sc-nav__row { display: flex; align-items: center; justify-content: space-between; }
+  .sc-nav__brand {
+    font-family: var(--mono); font-size: var(--text-eyebrow);
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink); text-decoration: none;
+  }
+  .sc-nav__brand .slash { color: var(--dim); margin: 0 var(--sp-1); }
+  .sc-nav__links { display: flex; gap: var(--sp-5); align-items: center; }
+  .sc-nav__links a {
+    font-family: var(--sans); font-size: var(--text-body-sm);
+    color: var(--muted); text-decoration: none;
+    transition: color var(--motion-fast) var(--ease-out);
+  }
+  .sc-nav__links a:hover { color: var(--ink); }
+  @media (max-width: 640px) { .sc-nav__links a:not(.btn) { display: none; } }
 
-  nav { padding: 22px 0; border-bottom: 1px solid var(--line); }
-  nav .brand { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink); text-decoration: none; }
-  nav .brand .slash { color: var(--muted); margin: 0 6px; }
+  .article-head {
+    padding: var(--sp-9) 0 var(--sp-6);
+    border-bottom: 1px solid var(--line);
+  }
+  .article-head h1 {
+    font-size: var(--text-h1);
+    line-height: 1.04;
+    letter-spacing: -0.028em;
+    margin-top: var(--sp-4);
+    max-width: 800px;
+  }
+  @media (max-width: 720px) { .article-head h1 { font-size: 38px; } }
+  .article-head .meta { margin-top: var(--sp-5); color: var(--dim); }
 
-  header { padding: 64px 0 16px; border-bottom: 1px solid var(--line); margin-bottom: 40px; }
-  header .pre { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
-  h1 { font-size: 36px; line-height: 1.15; letter-spacing: -0.02em; font-weight: 600; margin-bottom: 12px; }
-  .meta { color: var(--muted); font-size: 13px; }
+  .article-body { padding: var(--sp-8) 0; }
+  .article-body h2 {
+    font-size: var(--text-h2-sm);
+    margin-top: var(--sp-7);
+    margin-bottom: var(--sp-4);
+    max-width: 60ch;
+  }
+  .article-body h2:first-child { margin-top: 0; }
+  .article-body h3 {
+    margin-top: var(--sp-5);
+    margin-bottom: var(--sp-3);
+    font-size: var(--text-h3);
+  }
+  .article-body p {
+    color: var(--muted);
+    max-width: 64ch;
+    margin-bottom: var(--sp-4);
+    line-height: 1.7;
+  }
+  .article-body p em { color: var(--muted); }
+  .article-body ol, .article-body ul {
+    color: var(--muted);
+    max-width: 64ch;
+    margin: var(--sp-4) 0 var(--sp-5) var(--sp-5);
+    line-height: 1.75;
+  }
+  .article-body ol li, .article-body ul li { margin-bottom: var(--sp-3); }
+  .article-body strong { color: var(--ink); font-weight: 500; }
+  .article-body code {
+    font-family: var(--mono); font-size: 0.92em;
+    background: var(--panel); padding: 2px 6px; border-radius: 3px;
+    color: var(--ink); border: 1px solid var(--line);
+  }
+  .article-body pre {
+    background: var(--panel);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-md);
+    padding: var(--sp-5);
+    margin: var(--sp-5) 0;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: var(--text-body-sm);
+    line-height: 1.7;
+    color: var(--ink);
+  }
+  .article-body pre code { background: transparent; border: 0; padding: 0; }
+  .article-body a { color: var(--accent-text); }
+  .article-body a:hover { color: var(--accent-strong); }
 
-  h2 { font-size: 18px; letter-spacing: -0.005em; margin: 40px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
-  h3 { font-size: 15px; margin: 22px 0 8px; color: var(--ink); }
-  p, li { color: var(--ink); margin-bottom: 12px; }
-  ul, ol { padding-left: 22px; }
-  code { background: #1a1a1a; padding: 1px 6px; border-radius: 3px; font-size: 13px; font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace; }
-  pre { background: #0d0d0d; border: 1px solid var(--line); padding: 14px 18px; border-radius: 8px; overflow-x: auto; font-size: 12px; line-height: 1.55; margin: 14px 0; }
-  pre code { background: transparent; padding: 0; }
-  strong { color: var(--ink); font-weight: 600; }
-  em { color: var(--muted); }
-  a { color: var(--accent); }
+  /* Why-deterministic callout box */
+  .why-card {
+    background: var(--panel);
+    border: 1px solid var(--line-strong);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--r-md);
+    padding: var(--sp-6) var(--sp-6);
+    margin: var(--sp-5) 0 var(--sp-7);
+  }
+  .why-card h3 {
+    margin-top: 0;
+    color: var(--ink);
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: var(--text-h3);
+  }
+  .why-card p { margin-top: var(--sp-3); }
+  .why-card .reason {
+    margin-top: var(--sp-4);
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--line);
+  }
+  .why-card .reason:first-of-type { padding-top: 0; border-top: 0; margin-top: var(--sp-4); }
+  .why-card .reason h4 {
+    color: var(--accent-text);
+    font-family: var(--mono);
+    font-size: var(--text-eyebrow);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: var(--sp-2);
+  }
+  .why-card .reason p { margin: 0; max-width: 64ch; }
 
-  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
-  th, td { border: 1px solid var(--line); padding: 8px 12px; text-align: left; vertical-align: top; }
-  th { background: #141414; font-weight: 600; font-size: 12px; }
-  td:nth-child(2), td:nth-child(3) { text-align: right; font-variant-numeric: tabular-nums; font-family: ui-monospace, Menlo, monospace; }
+  /* Category table */
+  .cat-table {
+    width: 100%;
+    max-width: 760px;
+    border-collapse: collapse;
+    margin: var(--sp-5) 0;
+    font-size: var(--text-body-sm);
+  }
+  .cat-table th, .cat-table td {
+    text-align: left;
+    padding: var(--sp-3) var(--sp-4);
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  .cat-table th {
+    color: var(--dim);
+    font-family: var(--mono);
+    font-size: var(--text-eyebrow);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .cat-table td:nth-child(2), .cat-table td:nth-child(3) {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    font-family: var(--mono);
+  }
+  .cat-table td em { color: var(--muted); font-style: italic; font-family: var(--serif); }
 
-  .callout { background: rgba(129,140,248,0.06); border-left: 3px solid #818cf8; border-radius: 6px; padding: 14px 18px; margin: 18px 0; font-size: 14px; }
-  .callout.warn { background: rgba(212,166,74,0.06); border-left-color: var(--accent); }
+  /* Worked example */
+  .ex-table {
+    width: 100%;
+    max-width: 700px;
+    border-collapse: collapse;
+    margin: var(--sp-5) 0;
+    font-size: var(--text-body-sm);
+  }
+  .ex-table th, .ex-table td {
+    padding: var(--sp-3);
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    color: var(--muted);
+  }
+  .ex-table th { color: var(--dim); font-family: var(--mono); font-size: var(--text-eyebrow); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; }
+  .ex-table td:last-child { text-align: right; font-family: var(--mono); color: var(--ink); }
+  .ex-total { font-family: var(--mono); color: var(--accent-text); }
 
-  .sev { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 3px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600; vertical-align: middle; margin-right: 6px; }
-  .sev.low    { color: #d1d5db; background: rgba(156,163,175,.14); border: 1px solid rgba(156,163,175,.32); }
-  .sev.medium { color: var(--accent); background: rgba(212,166,74,.14); border: 1px solid rgba(212,166,74,.32); }
-  .sev.high   { color: var(--warn); background: rgba(201,90,74,.14); border: 1px solid rgba(201,90,74,.32); }
+  /* Severity inline pills */
+  .sev {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: var(--text-eyebrow);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 1px 6px;
+    border-radius: 3px;
+    border: 1px solid;
+  }
+  .sev.low { color: var(--muted); border-color: var(--line-em); background: var(--panel-2); }
+  .sev.medium { color: var(--accent-text); border-color: var(--accent-border); background: var(--accent-soft); }
+  .sev.high { color: var(--warn-text); border-color: var(--warn-border); background: var(--warn-soft); }
 
-  footer { padding: 56px 0; border-top: 1px solid var(--line); margin-top: 80px; color: var(--dim); font-size: 12px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-  footer a { color: var(--muted); text-decoration: none; }
-  footer a:hover { color: var(--ink); }
+  /* Footer (same as privacy) */
+  .sc-footer { border-top: 1px solid var(--line); padding: var(--sp-7) 0 var(--sp-8); color: var(--dim); }
+  .sc-footer__row { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: var(--sp-6); align-items: start; }
+  @media (max-width: 720px) { .sc-footer__row { grid-template-columns: 1fr; gap: var(--sp-5); } }
+  .sc-footer__sig p:first-child { font-family: var(--mono); font-size: var(--text-eyebrow); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); }
+  .sc-footer__sig p:not(:first-child) { font-family: var(--mono); font-size: var(--text-caption); color: var(--dim); margin-top: var(--sp-3); }
+  .sc-footer__nav { display: flex; flex-direction: column; gap: var(--sp-2); }
+  .sc-footer__nav .label { font-family: var(--mono); font-size: var(--text-eyebrow); letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); margin-bottom: var(--sp-2); }
+  .sc-footer__nav a { color: var(--muted); font-family: var(--mono); font-size: var(--text-caption); transition: color var(--motion-fast) var(--ease-out); text-decoration: none; }
+  .sc-footer__nav a:hover { color: var(--ink); }
+  .sc-footer__meta { font-family: var(--mono); font-size: var(--text-eyebrow); color: var(--dim); line-height: 1.8; }
 </style>
 </head>
 <body>
 
-<nav>
-  <div class="wrap">
-    <a class="brand" href="/">ScopeCreep <span class="slash">/</span> Notary</a>
+<nav class="sc-nav">
+  <div class="container sc-nav__row">
+    <a class="sc-nav__brand" href="/">SCOPECREEP <span class="slash">/</span> NOTARY</a>
+    <div class="sc-nav__links">
+      <a href="/methodology.html">Methodology</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="https://github.com/ollie88skwda/scopecreep">GitHub</a>
+      <a class="btn btn-primary press" href="/">Home</a>
+    </div>
   </div>
 </nav>
 
-<div class="wrap">
-
-<header>
-  <div class="pre">Methodology</div>
-  <h1>How the scoring works.</h1>
-  <div class="meta">Last updated 2026-05-24 · Applies to lexicon v1, content script v0.4.0+</div>
+<header class="article-head">
+  <div class="container">
+    <p class="eyebrow">METHODOLOGY</p>
+    <h1>How the <span class="em-italic">scoring</span> works.</h1>
+    <p class="meta">Last updated 2026-05-26 · Applies to lexicon v1, content script v0.4.0+</p>
+  </div>
 </header>
 
-<div class="callout">
-  No machine learning. No language model. Just a curated lexicon of scope-expansion phrases, lowercased substring matching, and a small severity-weighted score. You can read the entire algorithm here. The lexicon is open data.
-</div>
+<main class="article-body">
+  <div class="container container-narrow">
 
-<h2>The 30-second version</h2>
-<ol>
-  <li>Extension scans each Slack message you receive against <strong>274 hand-curated phrases</strong> grouped into 15 categories.</li>
-  <li>Each matched phrase contributes a small score: <code>severity × category_weight</code>.</li>
-  <li>If a message's total score is <strong>≥ 2</strong>, it gets a badge.</li>
-  <li>Badge color: amber for medium-severity flag, brick red if any high-severity phrase was matched.</li>
-  <li>Messages you wrote yourself are skipped (matched against the display name you configure).</li>
-</ol>
+    <p style="font-size: var(--text-body-lg); color: var(--ink); max-width: 64ch;">No machine learning. No language model. A curated lexicon of scope-expansion phrases, case-insensitive substring matching, and a small severity-weighted score. You can read the entire algorithm on this page. The lexicon is open data.</p>
 
-<h2>The lexicon</h2>
-<p>274 phrases across 15 psychological categories. Each phrase has a severity (<span class="sev low">low</span> <span class="sev medium">medium</span> <span class="sev high">high</span>) and a category weight that nudges the score up or down.</p>
+    <h2>The 30-second version</h2>
+    <ol>
+      <li>The extension scans each incoming Slack message against <strong>274 hand-curated phrases</strong> grouped into 15 categories.</li>
+      <li>Every match contributes a small score: <code>severity × category_weight</code>.</li>
+      <li>If the message's total score reaches <strong>2 or higher</strong>, it gets a badge.</li>
+      <li>Badge color: <span class="sev medium">MEDIUM</span> for medium-severity matches, <span class="sev high">HIGH</span> if any high-severity phrase was hit.</li>
+      <li>Messages you sent yourself are skipped, matched against the display name you configure in Settings.</li>
+    </ol>
 
-<table>
-  <thead><tr><th>Category</th><th>Phrases</th><th>Weight</th></tr></thead>
-  <tbody>
-    <tr><td>Additive (<em>"can you also...", "while you're at it..."</em>)</td><td>25</td><td>1.0</td></tr>
-    <tr><td>Trivialize (<em>"just a quick...", "small change..."</em>)</td><td>19</td><td>0.9</td></tr>
-    <tr><td>Vague future (<em>"I was thinking...", "would it be possible..."</em>)</td><td>15</td><td>0.7</td></tr>
-    <tr><td>Scope shift (<em>"let's pivot to...", "change of plans"</em>)</td><td>11</td><td>1.2</td></tr>
-    <tr><td>Urgency (<em>"by tomorrow", "ASAP"</em>)</td><td>15</td><td>0.6</td></tr>
-    <tr><td>Relationship leverage (<em>"since you're already there..."</em>)</td><td>10</td><td>1.0</td></tr>
-    <tr><td>Comparison shame (<em>"the old designer..."</em>)</td><td>10</td><td>1.0</td></tr>
-    <tr><td>Specification creep (<em>"make it more...", "the gradient..."</em>)</td><td>35</td><td>0.8</td></tr>
-    <tr><td>Revision cycle (<em>"just one more round..."</em>)</td><td>13</td><td>1.0</td></tr>
-    <tr><td>Deferred spec (<em>"we forgot to mention..."</em>)</td><td>10</td><td>1.1</td></tr>
-    <tr><td>Technical creep (<em>"also needs to work on..."</em>)</td><td>17</td><td>1.0</td></tr>
-    <tr><td>Assumption (<em>"I assume this includes..."</em>)</td><td>11</td><td>0.9</td></tr>
-    <tr><td>Emotional coercion (<em>"we really need this"</em>)</td><td>10</td><td>0.7</td></tr>
-    <tr><td>Fake question (<em>"if you have a sec..."</em>)</td><td>11</td><td>0.6</td></tr>
-    <tr><td>Favor framing (<em>"shouldn't take long..."</em>)</td><td>13</td><td>0.9</td></tr>
-  </tbody>
-</table>
+    <div class="why-card">
+      <h3>Why deterministic.</h3>
+      <p>Four reasons we chose a lexicon over an LLM. Pick any one of them; the answer is the same.</p>
+      <div class="reason">
+        <h4>Speed</h4>
+        <p>Lexicon match runs in sub-millisecond time per message. An LLM round-trip is somewhere between 400ms and several seconds, depending on the model and the network.</p>
+      </div>
+      <div class="reason">
+        <h4>Cost</h4>
+        <p>$0 marginal per check, forever. No quota, no rate limit, no surprise bill the month a client gets chatty.</p>
+      </div>
+      <div class="reason">
+        <h4>Auditability</h4>
+        <p>When a message gets flagged, you can see exactly which phrase matched and exactly what it weighed. No "the model said so." You can argue with a regex; you cannot argue with a black box.</p>
+      </div>
+      <div class="reason">
+        <h4>Determinism</h4>
+        <p>Same input, same output, every time. The flag you saw on Tuesday is the flag you'll see on Friday. That matters when the next step is emailing a client a bill.</p>
+      </div>
+    </div>
 
-<h2>The scoring formula</h2>
-<p>For every message, the extension runs this loop:</p>
-<pre><code>score = 0
+    <h2>The lexicon</h2>
+    <p>274 phrases across 15 psychological categories. Each phrase carries a severity (<span class="sev low">LOW</span> <span class="sev medium">MEDIUM</span> <span class="sev high">HIGH</span>) and a category weight that nudges the final score up or down.</p>
+
+    <table class="cat-table">
+      <thead>
+        <tr><th>Category</th><th>Phrases</th><th>Weight</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Additive <em>("can you also...", "while you're at it...")</em></td><td>25</td><td>1.0</td></tr>
+        <tr><td>Trivialize <em>("just a quick...", "small change...")</em></td><td>19</td><td>0.9</td></tr>
+        <tr><td>Vague future <em>("I was thinking...", "would it be possible...")</em></td><td>15</td><td>0.7</td></tr>
+        <tr><td>Scope shift <em>("let's pivot to...", "change of plans")</em></td><td>11</td><td>1.2</td></tr>
+        <tr><td>Urgency <em>("by tomorrow", "ASAP")</em></td><td>15</td><td>0.6</td></tr>
+        <tr><td>Relationship leverage <em>("since you're already there...")</em></td><td>10</td><td>1.0</td></tr>
+        <tr><td>Comparison shame <em>("the old designer...")</em></td><td>10</td><td>1.0</td></tr>
+        <tr><td>Specification creep <em>("make it more...", "the gradient...")</em></td><td>35</td><td>0.8</td></tr>
+        <tr><td>Revision cycle <em>("just one more round...")</em></td><td>13</td><td>1.0</td></tr>
+        <tr><td>Deferred spec <em>("we forgot to mention...")</em></td><td>10</td><td>1.1</td></tr>
+        <tr><td>Technical creep <em>("also needs to work on...")</em></td><td>17</td><td>1.0</td></tr>
+        <tr><td>Assumption <em>("I assume this includes...")</em></td><td>11</td><td>0.9</td></tr>
+        <tr><td>Emotional coercion <em>("we really need this")</em></td><td>10</td><td>0.7</td></tr>
+        <tr><td>Fake question <em>("if you have a sec...")</em></td><td>11</td><td>0.6</td></tr>
+        <tr><td>Favor framing <em>("shouldn't take long...")</em></td><td>13</td><td>0.9</td></tr>
+      </tbody>
+    </table>
+
+    <h2>The scoring formula</h2>
+    <p>For every message, the extension runs this loop:</p>
+    <pre><code>score = 0
 hits = []
 for entry in lexicon.phrases:
     if entry.phrase in message.lower():
-        s = severity_weight[entry.severity]   // low=1, medium=2, high=3
-        w = category_weight[entry.category]   // 0.6 .. 1.2
+        s = severity_weight[entry.severity]   # low=1, medium=2, high=3
+        w = category_weight[entry.category]   # 0.6 .. 1.2
         score += s * w
         hits.append(entry)
 
-if score >= 2:
+if score &gt;= 2:
     flag(message, hits)</code></pre>
+    <p>That is the whole algorithm.</p>
 
-<p>That's it. Whole algorithm.</p>
+    <h3>Worked example</h3>
+    <p>Client message: <em>"Looks great! Can you also add a hover state? While you're at it, fix the spacing too. Shouldn't take long."</em></p>
+    <table class="ex-table">
+      <thead>
+        <tr><th>Phrase matched</th><th>Severity</th><th>Score</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>can you also</code> (additive)</td><td><span class="sev medium">MED</span></td><td>2 × 1.0 = 2.0</td></tr>
+        <tr><td><code>while you're at it</code> (additive)</td><td><span class="sev high">HIGH</span></td><td>3 × 1.0 = 3.0</td></tr>
+        <tr><td><code>shouldn't take long</code> (favor framing)</td><td><span class="sev high">HIGH</span></td><td>3 × 0.9 = 2.7</td></tr>
+        <tr><td colspan="2" class="ex-total"><strong>Total</strong></td><td class="ex-total"><strong>7.7</strong></td></tr>
+      </tbody>
+    </table>
+    <p>Well above the threshold of 2. Badge color: <span class="sev high">HIGH</span>, because high-severity phrases were hit.</p>
 
-<h3>Worked example</h3>
-<p>Client message: <em>"Looks great! Can you also add a hover state? While you're at it, fix the spacing too — shouldn't take long."</em></p>
-<table>
-  <thead><tr><th>Phrase matched</th><th>Severity</th><th>Score</th></tr></thead>
-  <tbody>
-    <tr><td><code>can you also</code> (additive)</td><td>medium</td><td>2 × 1.0 = 2.0</td></tr>
-    <tr><td><code>while you're at it</code> (additive)</td><td>high</td><td>3 × 1.0 = 3.0</td></tr>
-    <tr><td><code>shouldn't take long</code> (favor framing)</td><td>high</td><td>3 × 0.9 = 2.7</td></tr>
-  </tbody>
-</table>
-<p><strong>Total: 7.7</strong>. Well above the 2.0 threshold. Badge: brick red (high-severity hits present).</p>
+    <h2>Why the threshold is 2</h2>
+    <p>A single low-severity match (for example, <code>ASAP</code> alone at 1 × 0.6 = 0.6) does not trigger a badge. This stops alert fatigue on innocuous messages. With the threshold at 2:</p>
+    <ul>
+      <li>One medium-severity phrase = 2.0 → flags by a hair.</li>
+      <li>One high-severity phrase = 3.0 → flags clearly.</li>
+      <li>Two low-severity phrases together = 2.0 → flags.</li>
+      <li>One low alone = under threshold, no badge.</li>
+    </ul>
 
-<h2>Why a threshold of 2</h2>
-<p>A single low-severity match (e.g. just <code>ASAP</code> → 1 × 0.6 = 0.6) does <strong>not</strong> trigger a badge. This avoids alert fatigue on innocuous messages. The threshold of 2 means:</p>
-<ul>
-  <li>One medium-severity phrase = 2.0 → flags (just barely)</li>
-  <li>One high-severity phrase = 3.0 → flags clearly</li>
-  <li>Two low-severity phrases together = 2.0 → flags</li>
-  <li>One low alone = under threshold, no badge</li>
-</ul>
+    <h2>What it explicitly does not do</h2>
+    <ul>
+      <li><strong>No machine learning.</strong> The score is a sum of integers. No model. No training data. No GPUs.</li>
+      <li><strong>No LLM call at runtime.</strong> The extension does not talk to OpenAI, Anthropic, Google, or any AI provider when it scans a message.</li>
+      <li><strong>No fuzzy matching.</strong> The phrase <code>can you also</code> matches that exact three-word sequence (case-insensitive). It does not match <code>if you can also</code> via similarity scoring or anything tricky. The algorithm is fully predictable.</li>
+      <li><strong>No telemetry.</strong> We do not see what got flagged on your machine. We could not see it if we wanted to. See the <a href="/privacy.html">privacy policy</a>.</li>
+      <li><strong>No "smart" context detection.</strong> If a client quotes a previous message that happens to contain a phrase from the lexicon, the extension will flag it. False positive. Dismiss it. Dismiss-to-flag ratios are what we use to refine the lexicon over time.</li>
+    </ul>
 
-<h2>What we explicitly don't do</h2>
-<ul>
-  <li><strong>No machine learning.</strong> The "score" is a sum of integers. No model. No training data. No GPUs.</li>
-  <li><strong>No LLM call at runtime.</strong> The extension doesn't talk to OpenAI, Anthropic, Google, or any AI provider when scanning messages.</li>
-  <li><strong>No fuzzy matching.</strong> The phrase <code>"can you also"</code> matches that exact 3-word sequence (case-insensitive). It does NOT match <code>"if you can also"</code> via similarity scoring or anything tricky. This makes the algorithm fully predictable.</li>
-  <li><strong>No telemetry.</strong> We do not see what the extension flagged on your machine. We could not see it even if we wanted to — see the <a href="/privacy.html">privacy policy</a>.</li>
-  <li><strong>No "smart" context detection.</strong> If a client quotes a previous message that contains <code>"can you also"</code> and the quote happens to be in their reply, the extension will flag it. False positive. Dismiss it; we use dismiss/flagged ratios to refine the lexicon over time.</li>
-</ul>
+    <h2>How the lexicon evolves</h2>
+    <p>Maintained as <code>src/data/lexicon.json</code> in the open-source repo. Process:</p>
+    <ol>
+      <li>Users flag false positives via the popup's Dismiss button.</li>
+      <li>Dismiss-to-flag ratio per phrase is tracked privately on each user's device. Aggregated reporting is opt-in only and only ships with the paid tier.</li>
+      <li>When a phrase exceeds a 30% dismiss rate across opted-in users, it gets reviewed and either rephrased, severity-lowered, or removed.</li>
+      <li>New phrases come from public freelance forums (r/freelance, freelance Twitter rants, indie hacker threads). Curated by hand. Never automated.</li>
+      <li>Lexicon version bumps are documented in <a href="https://github.com/ollie88skwda/scopecreep/blob/main/CHANGELOG.md"><code>CHANGELOG.md</code></a>.</li>
+    </ol>
 
-<h2>How the lexicon evolves</h2>
-<p>Maintained as <code>src/data/lexicon.json</code> in the open-source repo. Process:</p>
-<ol>
-  <li>Users flag false positives via the popup "Dismiss" button.</li>
-  <li>Dismiss/flag ratio per phrase is tracked privately on each user's device (Pro tier opt-in aggregated reporting forthcoming).</li>
-  <li>When a phrase exceeds 30% dismiss rate across opted-in users, it's reviewed and either rephrased, severity-lowered, or removed.</li>
-  <li>New phrases come from public freelance forums (r/freelance, freelance Twitter rants, indie hacker threads) — curated, never automated.</li>
-  <li>Lexicon version bumps documented in <a href="https://github.com/">CHANGELOG.md</a>.</li>
-</ol>
+    <h2>Skipping your own messages</h2>
+    <p>To avoid flagging your own outgoing messages, the extension compares each message's sender to a display name you set in Settings. Case-insensitive and trimmed. If your Slack display name is "Ollie Nguyen" and a message header reads "Ollie Nguyen", the message is skipped (and tagged in the DOM with <code>data-scopecreep-self="1"</code> so you can verify). If the display name is unset, all messages are processed. Legacy fallback for first-run users.</p>
 
-<h2>Skipping your own messages</h2>
-<p>To avoid flagging your own messages, the extension compares each message's sender to a display name you set in Settings. Case-insensitive, trimmed. If your Slack display name is "Ollie Nguyen" and a message header reads "Ollie Nguyen", that message is skipped (and tagged in the DOM with <code>data-scopecreep-self="1"</code> so you can verify). If unset, all messages are processed (legacy fallback for first-run users).</p>
+    <h2>Try it yourself</h2>
+    <p>The popup's Settings view has a Test mode textarea. Paste any sample message. You'll see exactly which phrases matched, the computed score, and whether the message would be flagged. Runs locally. Nothing is sent anywhere.</p>
 
-<h2>Try it yourself</h2>
-<p>The popup's Settings view has a <strong>Test mode</strong> textarea. Paste any sample message; you'll see exactly which phrases matched, the computed score, and whether the message would be flagged. Runs locally — nothing is sent anywhere.</p>
+    <h2>Open data</h2>
+    <p>The complete lexicon lives in <code>src/data/lexicon.json</code> in the <a href="https://github.com/ollie88skwda/scopecreep">open-source repo</a>. Read it, audit it, send pull requests for missing phrases or bad ones. The categorization, severity tags, and category weights are all visible in the same file.</p>
 
-<h2>Open data</h2>
-<p>The complete lexicon is in the <code>src/data/lexicon.json</code> file in the open-source repo. Read it, audit it, send pull requests for missing phrases or bad ones. The categorization, severity tags, and category weights are all visible.</p>
+  </div>
+</main>
 
-</div>
-
-<footer>
-  <div class="wrap" style="display: flex; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 12px;">
-    <div>ScopeCreep Notary · v0.4.0 · made for freelancers</div>
-    <div>
-      <a href="/">Home</a> ·
-      <a href="/privacy.html">Privacy</a> ·
-      <a href="https://github.com/ollie88skwda/scopecreep">GitHub</a> ·
-      <a href="https://github.com/ollie88skwda/scopecreep/issues">Issues</a>
+<footer class="sc-footer">
+  <div class="container sc-footer__row">
+    <div class="sc-footer__sig">
+      <p>SCOPECREEP <span style="color: var(--dim);">/</span> NOTARY</p>
+      <p>Built solo in public by Oliver Nguyen.</p>
+      <p>v0.4.0 · beta · made for freelancers</p>
     </div>
+    <div class="sc-footer__nav">
+      <span class="label">Read</span>
+      <a href="/methodology.html">Methodology</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/">Home</a>
+    </div>
+    <div class="sc-footer__nav">
+      <span class="label">Open</span>
+      <a href="https://github.com/ollie88skwda/scopecreep">GitHub</a>
+      <a href="https://github.com/ollie88skwda/scopecreep/issues">Issues</a>
+      <a href="https://github.com/ollie88skwda/scopecreep/security/advisories/new">Security Advisory</a>
+    </div>
+  </div>
+  <div class="container" style="margin-top: var(--sp-6);">
+    <p class="sc-footer__meta">v0.4.0 · commit main · updated 2026-05-26 · open source on github</p>
   </div>
 </footer>
 
