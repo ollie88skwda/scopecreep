@@ -104,7 +104,7 @@ If you've ever read a client message and thought "ugh, that's another 3 hours of
 Website: https://scopecreep.app
 Methodology: https://scopecreep.app/methodology.html
 Privacy policy: https://scopecreep.app/privacy.html
-Source code: https://github.com/[ollie]/scopecreep
+Source code: https://github.com/ollie88skwda/scopecreep
 Questions: hello@scopecreep.app
 ```
 

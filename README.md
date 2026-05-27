@@ -12,7 +12,7 @@ Chrome extension that watches client messages in Slack for scope-expanding langu
 
 ### From source (load unpacked)
 
-1. Clone this repo: `git clone https://github.com/[ollie]/scopecreep && cd scopecreep`
+1. Clone this repo: `git clone https://github.com/ollie88skwda/scopecreep && cd scopecreep`
 2. Open `chrome://extensions` in Chrome (or Edge, Brave, Arc — any Chromium browser)
 3. Toggle **Developer mode** on (top right)
 4. Click **Load unpacked**, select the cloned `scopecreep/` directory
@@ -134,7 +134,7 @@ All under `chrome.storage.local`:
 ### Local install + iteration
 
 ```bash
-git clone https://github.com/[ollie]/scopecreep
+git clone https://github.com/ollie88skwda/scopecreep
 cd scopecreep
 # Load unpacked in chrome://extensions (see Install section)
 # Edit files. After saves, click the "reload" icon on the extension card.
@@ -252,9 +252,7 @@ PRs need passing tests (`npm test`) + a `CHANGELOG.md` entry.
 
 ## Operating workspace
 
-Active development happens in [voice/](https://github.com/[ollie]/voice) — the operator workspace where Claude Code runs autonomously, ships features, and logs every decision. This `scopecreep/` repo holds only the shipping product code.
-
-See `voice/HANDOFF.html` for the operator-workspace briefing if you're picking up where the loop left off.
+Active development happens in a sibling `voice/` workspace where Claude Code runs autonomously, ships features, and logs every decision. That workspace is private; this `scopecreep/` repo holds only the shipping product code.
 
 ---
 
